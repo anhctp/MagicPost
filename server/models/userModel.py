@@ -9,7 +9,7 @@ class Gender(str, enum.Enum):
     SECRETE = "secrete"
 
 class UserRole(str, enum.Enum):
-    SEO = "SEO"
+    CEO = "CEO"
     STAFFTRANSACTION = "Staff Transaction"
     STAFFGATHERING = "Staff Gathering"
     LEADERTRANSACTION = "Leader Transaction"
