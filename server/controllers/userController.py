@@ -106,6 +106,12 @@ class UserController:
     
 
     def createUser(user: RegisterUser, db: Session = Depends(getDatabase)):
+        if user.role == UserRole.LEADERGATHERING or user.role == UserRole.LEADERTRANSACTION:
+            checkDupplicate = db.query(UserModel).filter(UserModel.role == user.role, UserModel.warehouses_id == user.warehouses_id).first()
+            if checkDupplicate:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail=f"Leader existed!"
+                )
         db_user = UserModel(
             warehouses_id=user.warehouses_id,
             fullname=user.fullname,
