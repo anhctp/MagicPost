@@ -6,11 +6,12 @@ from database import getDatabase
 from fastapi.security import HTTPBearer
 from fastapi import Depends, HTTPException, status
 from passlib.context import CryptContext
-from models.userModel import UserModel
+from models.userModel import UserModel, UserRole
 from schemas.userSchema import RegisterUser, Login
 from dotenv import load_dotenv
 import os
 from fastapi.security import HTTPBearer
+from controllers.warehouseController import WarehouseController
 
 
 load_dotenv()
@@ -84,9 +85,29 @@ class UserController:
     
     def getUserByEmail(email: str, db: Session = Depends(getDatabase)):
         return db.query(UserModel).filter(UserModel.email == email).first()
+    
+    def findUserByRole(role: UserRole, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+        if role == UserRole.CEO:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot access to CEO role"
+            )
+        if (role == UserRole.LEADERGATHERING or role == UserRole.LEADERTRANSACTION) and current_user.role != UserRole.CEO:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Only the CEO is granted access!"
+            )
+        user = db.query(UserModel).filter(UserModel.role == role).first()
+        if not user:
+            return {}
+        location = WarehouseController.getWarehouseById(user.warehouses_id)
+        return {
+            "user": user,
+            "location": location
+        }
+    
 
-    def createUser(user: UserModel, db: Session = Depends(getDatabase)):
+    def createUser(user: RegisterUser, db: Session = Depends(getDatabase)):
         db_user = UserModel(
+            warehouses_id=user.warehouses_id,
             fullname=user.fullname,
             image_path=user.image_path,
             email=user.email,
@@ -132,8 +153,20 @@ class UserController:
         }
         return response
 
-    def deleteUser(userId: int, db: Session):
+    def deleteUser(userId: int, db: Session, current_user: UserModel = Depends(verifyToken)):
         dbUserId = db.query(UserModel).filter(UserModel.id == userId).first()
+        if not dbUserId:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Credentials"
+            )
+        if (dbUserId.role == UserRole.LEADERGATHERING or dbUserId.role == UserRole.LEADERTRANSACTION) and current_user.role != UserRole.CEO:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Only CEO can delete leader!"
+            )
+        if (dbUserId.role == UserRole.STAFFGATHERING or dbUserId.role == UserRole.STAFFTRANSACTION) and (current_user.role == UserRole.STAFFTRANSACTION or current_user.role == UserRole.STAFFGATHERING):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Only CEO, leader can delete staff!"
+            )
         db.delete(dbUserId)
         db.commit()
-        return {"msg": "Deleted"}
+        return {"detail": "Deleted"}

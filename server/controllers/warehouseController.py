@@ -90,4 +90,4 @@ class WarehouseController:
             )
         db.delete(warehouse)
         db.commit()
-        return {"msg": "Deleted"}
+        return {"detail": "Deleted"}

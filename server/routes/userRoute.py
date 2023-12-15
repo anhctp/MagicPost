@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import getDatabase
 from controllers.userController import UserController, verifyToken
 from schemas.userSchema import RegisterUser, Login
-from models.userModel import UserModel
+from models.userModel import UserModel, UserRole
 
 router = APIRouter(
     tags=["Users"],
@@ -33,6 +33,10 @@ def get_me(current_user: UserModel = Depends(verifyToken)):
 def get_all_user(db: Session = Depends(getDatabase)):
     return UserController.getAllUser(db=db)
 
+@router.get("/user/find")
+def find_user_by_role(role: UserRole, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+    return UserController.findUserByRole(role=role, db=db, current_user=current_user)
+
 
 @router.get("/user/{userId}")
 def get_user_by_id(userId: int, db: Session = Depends(getDatabase)):
@@ -41,6 +45,6 @@ def get_user_by_id(userId: int, db: Session = Depends(getDatabase)):
 
 @router.delete("/user/delete/{userId}")
 def delete_user(
-    userId: int, db: Session = Depends(getDatabase)
+    userId: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)
 ):
-    return UserController.deleteUser(userId=userId, db=db)
+    return UserController.deleteUser(userId=userId, db=db, current_user=current_user)
