@@ -16,7 +16,7 @@ class TransactionDetailModel(database.Base):
     __tablename__ = "transaction_details"
     transaction_id = Column(Integer, ForeignKey("transactions.id"), primary_key=True)
     item_type = Column(Enum(ItemType))
-    item_description = Column(Text)
+    item_description = Column(Text, default="")
     item_quantity = Column(Integer, default=1)
     item_weight = Column(Float, default=0)
     item_value = Column(Integer, default=0)
