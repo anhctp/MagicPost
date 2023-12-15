@@ -1,9 +1,9 @@
 import database
 from sqlalchemy import Column, Integer, String, ForeignKey
 
-class DistrictModel(database.Base):
-    __tablename__ = "districts"
+class WardModel(database.Base):
+    __tablename__ = "wards"
     id = Column(Integer, primary_key=True)
-    division_id = Column(Integer, ForeignKey("divisions.id"))
+    district_id = Column(Integer, ForeignKey("districts.id"))
     name = Column(String(300))
     type = Column(String(100))
