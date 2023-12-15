@@ -15,6 +15,7 @@ class Login(BaseModel):
         return email
 
 class RegisterUser(BaseModel):
+    warehouses_id: int
     fullname: str
     phone: str
     image_path: str

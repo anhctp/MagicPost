@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine
-from routes import userRoute
+from routes import userRoute, locationRoute, warehouseRoute
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.include_router(userRoute.router, prefix="/api")
+app.include_router(locationRoute.router, prefix="/api")
+app.include_router(warehouseRoute.router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,

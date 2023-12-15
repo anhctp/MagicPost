@@ -9,7 +9,7 @@ class Gender(str, enum.Enum):
     SECRETE = "secrete"
 
 class UserRole(str, enum.Enum):
-    SEO = "SEO"
+    CEO = "CEO"
     STAFFTRANSACTION = "Staff Transaction"
     STAFFGATHERING = "Staff Gathering"
     LEADERTRANSACTION = "Leader Transaction"
@@ -18,7 +18,7 @@ class UserRole(str, enum.Enum):
 class UserModel(database.Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    warehouses_id = Column(Integer, ForeignKey("warehouses.id"))
+    warehouses_id = Column(Integer, ForeignKey("warehouses.id"), nullable=False)
     fullname = Column(String(50))
     phone = Column(String(10), unique=True)
     image_path = Column(String(100))
