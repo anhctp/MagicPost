@@ -10,8 +10,9 @@ class WarehouseController:
         skip = (page - 1) * size
         division_alias = aliased(divisionModel.DivisionModel)
         district_alias = aliased(districtModel.DistrictModel)
+        ward_alias = aliased(wardModel.WardModel)
         warehouses = (
-            db.query(WarehouseModel.id, WarehouseModel.type, WarehouseModel.location_id, locationModel.LocationModel.address, district_alias.name.label('district_name'), division_alias.name.label('division_name'))
+            db.query(WarehouseModel.id, WarehouseModel.type, WarehouseModel.location_id, locationModel.LocationModel.address, ward_alias.name.label('ward_name'), district_alias.name.label('district_name'), division_alias.name.label('division_name'))
             .join(locationModel.LocationModel, WarehouseModel.location_id == locationModel.LocationModel.id)
             .join(wardModel.WardModel, locationModel.LocationModel.ward_id == wardModel.WardModel.id)
             .join(districtModel.DistrictModel, wardModel.WardModel.district_id == districtModel.DistrictModel.id)
@@ -27,6 +28,7 @@ class WarehouseController:
                 "location_id": item.location_id,
                 "type": item.type,
                 "address": item.address,
+                "ward": item.ward_name,
                 "district": item.district_name,
                 "division": item.division_name,
             }
