@@ -1,11 +1,11 @@
 'use client'
 
 import Link from "next/link";
-import SearchBar from "./searchBar";
+import SearchBar from "../searchBar";
 import { usePathname } from "next/navigation";
-import Sign_Button from "./signButton";
+import Sign_Button from "../signButton";
 import { useState } from "react";
-import SideBar from "../sideBar";
+import SideBar from "./sideBar";
 import { useEffect, useCallback, useRef } from "react";
 
 export default function NavBar() {
@@ -34,7 +34,7 @@ export default function NavBar() {
                             }
                         </li>
                         <li>
-                            <Link className={`link ${pathname === '/home/serv' ? active : ''}`} href="/home/serv">Dịch vụ</Link>
+                            <Link className={`link ${pathname === '/home/services' ? active : ''}`} href="/home/services">Dịch vụ</Link>
                         </li>
                     </ul>
                 </nav>

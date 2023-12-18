@@ -1,6 +1,6 @@
 
-import Slider from "@/components/slider";
-import Tabs from "@/components/tabs";
+import Slider from "@/components/home/slider/slider";
+import Tabs from "@/components/home/tracking/tabs";
 
 export default function Customer() {
     return (

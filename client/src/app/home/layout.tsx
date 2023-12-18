@@ -1,5 +1,5 @@
-import Footer from "@/components/footer"
-import NavBar from "@/components/header/navBar"
+import Footer from "@/components/footer/footer"
+import NavBar from "@/components/header/navBar/navBar"
 
 export default function CustomerLayout({
     children // will be a page or nested layout

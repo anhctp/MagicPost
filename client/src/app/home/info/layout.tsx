@@ -1,6 +1,6 @@
-import SideBar from "@/components/sideBar"
+import SideBar from "@/components/header/navBar/sideBar"
 
-export default function in4Layout({children}: {
+export default function infoLayout({children}: {
     children: React.ReactNode
   }) {
     return (
