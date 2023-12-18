@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Libre_Franklin } from "next/font/google";
 import "../../public/globals.css";
+import AuthWatcher from "@/components/authwatcher";
 const libre = Libre_Franklin({ subsets: ['latin']});
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={libre.className}>
+        <AuthWatcher />
         {children}
       </body>
     </html>
