@@ -20,7 +20,7 @@ Features:
 ## 🚀  Quickstart
 ```bash
 # clone project
-git clone [https://github.com/ctpanh/MagicPost.git](https://github.com/ctpanh/MagicPost.git)
+git clone https://github.com/ctpanh/MagicPost.git
 cd MagicPost
 # Run backend
 cd server
