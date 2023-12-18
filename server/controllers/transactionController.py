@@ -1,5 +1,6 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from controllers.userController import verifyToken
 from database import getDatabase
 from datetime import datetime
@@ -96,3 +97,29 @@ class TransactionController:
         TrackingController.createTracking(transaction_id=transaction_id, tracking=tracking, db=db)
 
         return db_transaction
+    
+    # TODO:
+    #     1. Caculate total cod.
+    #     2. Join customer_locations table to get value.
+    #     3. Reduce queries as few as possible.
+    
+    def getTransactionById(transaction_id: int, db: Session=Depends(getDatabase)):
+        transaction = db.query(TransactionModel).filter(TransactionModel.id==transaction_id).first()
+        user = db.query(UserModel).filter(UserModel.id==transaction.user_id).first()
+        sender_location = db.query(CustomerLocationModel).filter(CustomerLocationModel.id==transaction.sender_location_id).first()
+        receiver_location = db.query(CustomerLocationModel).filter(CustomerLocationModel.id==transaction.receiver_location_id).first()
+        transaction_detail = db.query(TransactionDetailModel).filter(TransactionDetailModel.transaction_id==transaction.id).first()
+        transportation_charge = db.query(TransportationChargeModel).filter(TransportationChargeModel.transaction_id==transaction.id).first()
+        total_transportation_charge = transportation_charge.calculate_sum()
+        return {
+            "id": transaction.id,
+            "user": user,
+            "code": transaction.code,
+            "sender": sender_location,
+            "receiver": receiver_location,
+            "detail": transaction_detail,
+            "charge": {
+                "detail": transportation_charge,
+                "total": total_transportation_charge,  
+            }
+        }

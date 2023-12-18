@@ -8,3 +8,6 @@ class TransportationChargeModel(database.Base):
     surcharge = Column(Float, default=0)
     vat = Column(Float, default=0)
     other = Column(Float, default=0)
+
+    def calculate_sum(self):
+        return self.base + self.surcharge + self.vat + self.other

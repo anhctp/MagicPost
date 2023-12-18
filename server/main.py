@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine
 from routes import userRoute, locationRoute, warehouseRoute, transactionRoute
-from models import customerLocationModel, customerModel
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()

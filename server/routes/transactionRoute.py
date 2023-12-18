@@ -16,6 +16,10 @@ router = APIRouter(
 def get_all_transactions(db: Session = Depends(getDatabase)):
     return TransactionController.getAllTransaction(db=db)
 
+@router.get("/{transaction_id}")
+def get_transaction_by_id(transaction_id: int, db: Session = Depends(getDatabase)):
+    return TransactionController.getTransactionById(transaction_id=transaction_id, db=db)
+
 @router.post("/")
 def create_full_transaction(transaction: CreateTransaction, detail: CreateTransactionDetail, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return TransactionController.createTransaction(transaction=transaction, detail=detail, db=db, current_user=current_user)
