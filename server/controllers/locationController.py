@@ -5,6 +5,7 @@ from models.locationModel import LocationModel
 from models.divisionModel import DivisionModel
 from models.districtModel import DistrictModel
 from models.wardModel import WardModel
+from models.warehouseModel import WarehouseModel, TypeWarehouse
 from schemas.locationSchema import CreateLocation
 import httpx
 
@@ -146,17 +147,26 @@ class LocationController:
                             )
                             db.add(db_ward)
                             db.flush()
-                            print("district: ")
-                            print(db_district.division_id)
-                            print(db_district.name)
-                            print("ward: ")
-                            print(db_ward.id)
-                            print(db_ward.name)
                             db_location = LocationModel(
                                 ward_id=db_ward.id,
                             )
                             db.add(db_location)
                             db.flush()
+
+                            db_warehouse = WarehouseModel(
+                                location_id=db_location.id,
+                                type=TypeWarehouse.TRANSACTION
+                            )
+                            db.add(db_warehouse)
+                            db.flush()
+                            if db_ward.type == "thị trấn":
+                                db_warehouseg = WarehouseModel(
+                                    location_id=db_location.id,
+                                    type=TypeWarehouse.GATHERING
+                                )
+                                db.add(db_warehouseg)
+                                db.flush()
+            return {"detail": "successful!"}
 
         except Exception as error:
             raise HTTPException(status_code=500, detail=f"Network error: {str(error)}")
