@@ -38,8 +38,9 @@ class WarehouseController:
     def getWarehouseById(warehouse_id: int, db: Session = Depends(getDatabase)):
         division_alias = aliased(divisionModel.DivisionModel)
         district_alias = aliased(districtModel.DistrictModel)
+        ward_alias = aliased(wardModel.WardModel)
         warehouse = (
-            db.query(WarehouseModel.id, WarehouseModel.type, WarehouseModel.location_id,locationModel.LocationModel.address, district_alias.name.label('district_name'), division_alias.name.label('division_name'))
+            db.query(WarehouseModel.id, WarehouseModel.type, WarehouseModel.location_id,locationModel.LocationModel.address, ward_alias.name.label('ward_name'), district_alias.name.label('district_name'), division_alias.name.label('division_name'))
             .join(locationModel.LocationModel, WarehouseModel.location_id == locationModel.LocationModel.id)
             .join(wardModel.WardModel, locationModel.LocationModel.ward_id == wardModel.WardModel.id)
             .join(districtModel.DistrictModel, wardModel.WardModel.district_id == districtModel.DistrictModel.id)
@@ -54,7 +55,8 @@ class WarehouseController:
             "id": warehouse.id,
             "location_id": warehouse.location_id,
             "type": warehouse.type,
-            "address": warehouse.address,
+            "address": warehouse.address,                
+            "ward": warehouse.ward_name,
             "district": warehouse.district_name,
             "division": warehouse.division_name,
         }
