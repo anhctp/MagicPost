@@ -15,7 +15,7 @@ export default function SignButton() {
       Signed
     </div>
   ) : (
-    <div className="w-full h-fit justify-end items-start inline-flex text-center text-sm text-stone-600 font-semibold">
+    <div className="w-fit justify-end inline-flex text-center text-sm text-stone-600 font-semibold">
       <Link className="border-r px-2 hover:underline" href="/home/signIn">
         Đăng nhập
       </Link>
