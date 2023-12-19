@@ -12,7 +12,7 @@ app.include_router(transactionRoute.router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://magic-post-ctpanh.vercel.app", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*", "sentry-trace", "baggage"],
