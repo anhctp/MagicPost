@@ -20,6 +20,7 @@ const useAuthStore = create<authState>((set) => ({
     const token = localStorage.getItem("token");
     localStorage.removeItem("token");
     set({ token: "" });
+    set({ authorized: false });
     return !!token;
   },
 }));

@@ -22,5 +22,5 @@ export const useUserStore = create<UserState>((set) => ({
       set(() => ({ userRole: user.role }));
     }
   },
-  removeUser: () => set({ user: null, userID: null }),
+  removeUser: () => set({ user: null, userID: null, userRole: null }),
 }));
