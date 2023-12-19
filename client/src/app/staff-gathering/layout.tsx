@@ -6,7 +6,7 @@ export default function StaffGatheringLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="px-5">
       <NavBar />
       {children}
     </div>
