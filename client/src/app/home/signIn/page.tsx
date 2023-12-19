@@ -23,7 +23,7 @@ export default function Signin() {
       const newUser = res.data.user;
       localStorage.setItem("user", JSON.stringify(newUser));
       useUserStore.getState().setUser(newUser);
-      localStorage.setItem("accessToken ", res.data.jwtToken);
+      localStorage.setItem("token", res.data.jwtToken);
       router.push("/");
     }
   };

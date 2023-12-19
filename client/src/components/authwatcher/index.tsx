@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import useAuthStore from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
 import { useEffect, useState } from "react";
@@ -7,7 +7,6 @@ const AuthWatcher = () => {
   const [firstLoad, setFirstLoad] = useState(true);
   const { authorized, setAuthorized, token, setToken } = useAuthStore();
 
-  const user = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.setUser);
   const removeUser = useUserStore((state) => state.removeUser);
 
