@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import SearchBar from "../searchBar";
 import { usePathname } from "next/navigation";
 import Sign_Button from "../signButton";
 import { useState } from "react";
