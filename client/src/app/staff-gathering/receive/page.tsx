@@ -1,4 +1,7 @@
-import Table from "@/components/table";
+"use client";
+import Table from "@/components/staffGathering/table";
+import { ReceiveFrom } from "@/services/staffGathering/staffGatheringHelpers";
+import { useState } from "react";
 
 export default function StaffGathering() {
   const data = [
@@ -45,10 +48,30 @@ export default function StaffGathering() {
       status: "processing",
     },
   ];
-  const headers = ["STT", "Mã đơn hàng", "Loại đơn hàng", "Tình trạng", "Chi tiết"];
+  const headers = [
+    "STT",
+    "Mã đơn hàng",
+    "Loại đơn hàng",
+    "Tình trạng",
+    "Chi tiết",
+  ];
+
+  const [receiveFrom, setReceiveFrom] = useState<string>(ReceiveFrom.GATHERING);
   return (
     <>
-      <div>StaffGathering receive</div>
+      <div className="flex justify-start items-center">
+        <select
+          className="border rounded-full border-stone-600 text-stone-600 px-2"
+          onChange={(e) => {
+            setReceiveFrom(e.target.value);
+          }}
+        >
+          <option value={ReceiveFrom.GATHERING}>{ReceiveFrom.GATHERING}</option>
+          <option value={ReceiveFrom.TRANSACTION}>
+            {ReceiveFrom.TRANSACTION}
+          </option>
+        </select>
+      </div>
       <Table headers={headers} data={data} rowsPerPage={5} />
     </>
   );

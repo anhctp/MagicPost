@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-import useTable from "../../hooks/useTable";
+import useTable from "@/hooks/useTable";
 import TableFooter from "./tableFooter";
 
 interface Props {
