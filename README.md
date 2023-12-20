@@ -28,6 +28,6 @@ pip install -r requirements.txt
 uvicorn main:app -reload
 # Run frontend
 cd client
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
