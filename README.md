@@ -4,7 +4,7 @@
 Delivery management system.
 Features:
 
-- Transaction offices:
+- Transaction points:
     + Direct transactions with customers.
     + Transactions with the nearest collection points.
 - Gathering points:
