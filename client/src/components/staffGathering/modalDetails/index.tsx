@@ -5,7 +5,7 @@ interface Props {
   setOpenDetail: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-export const ModelDetail: React.FC<Props> = (props) => {
+export const ModalDetail: React.FC<Props> = (props) => {
   const { openDetail, setOpenDetail } = props;
   return (
     <>

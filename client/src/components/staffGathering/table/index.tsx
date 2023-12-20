@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 import useTable from "@/hooks/useTable";
 import TableFooter from "./tableFooter";
-import { ModelDetail } from "../modelDetails";
+import { ModalDetail } from "../modalDetails";
 
 interface Props {
   headers: any[];
@@ -61,7 +61,7 @@ const Table: React.FC<Props> = ({ headers, data, rowsPerPage }) => {
         />
       </div>
       {openDetail && (
-        <ModelDetail openDetail={openDetail} setOpenDetail={setOpenDetail} />
+        <ModalDetail openDetail={openDetail} setOpenDetail={setOpenDetail} />
       )}
     </>
   );
