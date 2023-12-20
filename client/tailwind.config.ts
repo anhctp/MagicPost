@@ -15,14 +15,14 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
-    },
-    colors: {
-      'black': '#000000',
-      'stone-600': '#52734D',
-      'neutral-400': '#91C788',
-      'white': '#FFFFFF',
-      'yellow-200':'#FEFFDE',
-      'gray': '#D5D7D8',
+      colors: {
+        'black': '#000000',
+        'stone-600': '#52734D',
+        'neutral-400': '#91C788',
+        'white': '#FFFFFF',
+        'yellow-200':'#FEFFDE',
+        'gray': '#D5D7D8',
+      },
     },
     screens: {
       'sm': '640px',
