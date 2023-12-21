@@ -20,6 +20,7 @@ class TransactionModel(database.Base):
     code = Column(String(15), nullable= False, index=True)
     sender_id = Column(Integer, ForeignKey("customers.id"))
     receiver_id = Column(Integer, ForeignKey("customers.id"))
+    cur_warehouse_id = Column(Integer, ForeignKey("warehouses.id"))
     transaction_send_date = Column(Date(), default=date)
     transaction_receive_date = Column(Date(), nullable=True)
     transaction_type = Column(Enum(TransactionType))

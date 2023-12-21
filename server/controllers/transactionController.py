@@ -19,6 +19,7 @@ from controllers.customerController import CustomerController
 import random
 
 from models.customerModel import CustomerModel
+from models.locationModel import LocationModel
 
 class TransactionController:
     def getAllTransaction(db: Session = Depends(getDatabase)):
@@ -35,6 +36,7 @@ class TransactionController:
             code=transactionCode,
             sender_id=sender.id,
             receiver_id=receiver.id,
+            cur_warehouse_id=current_user.warehouses_id,
             transaction_send_date=transaction.transaction_send_date,
             transaction_receive_date=transaction.transaction_receive_date,
             transaction_type=TransactionType.DELIVER,
@@ -106,6 +108,8 @@ class TransactionController:
     #     3. Reduce queries as few as possible.
     
     def create_forward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+        # warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
+        # if warehouse.type 
         transaction = db.query(TransactionModel).filter(TransactionModel.id==transaction_id).first()
         transaction.status = TransactionStatus.SENDING
         warehouse = db.query(WarehouseModel).filter(WarehouseModel.id==current_user.warehouses_id).first()
@@ -138,14 +142,15 @@ class TransactionController:
         db_tracking = TrackingController.createTracking(transaction_id=transaction_id, tracking=tracking, db=db)
         return db_tracking
     
-    def getTransactionById(transaction_id: int, db: Session=Depends(getDatabase)):
-        transaction = db.query(TransactionModel).filter(TransactionModel.id==transaction_id).first()
+    def getTransactionById(transaction_id: int, db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):        
+        transaction = db.query(TransactionModel).filter(TransactionModel.id==transaction_id, ).first()
         user = db.query(UserModel).filter(UserModel.id==transaction.user_id).first()
         sender = db.query(CustomerModel).filter(CustomerModel.id==transaction.sender_id).first()
         receiver = db.query(CustomerModel).filter(CustomerModel.id==transaction.receiver_id).first()
         transaction_detail = db.query(TransactionDetailModel).filter(TransactionDetailModel.transaction_id==transaction.id).first()
         transportation_charge = db.query(TransportationChargeModel).filter(TransportationChargeModel.transaction_id==transaction.id).first()
         total_transportation_charge = transportation_charge.calculate_sum()
+
         return {
             "id": transaction.id,
             "user": user,
@@ -163,6 +168,7 @@ class TransactionController:
         transaction_id: int,
         status: TransactionStatus,
         db: Session = Depends(getDatabase),
+        current_user: UserModel = Depends(verifyToken)
     ):
         transaction = (
             db.query(TransactionModel).filter(TransactionModel.id == transaction_id).first()
@@ -174,6 +180,8 @@ class TransactionController:
             )
         
         transaction.status = status
+        if status == TransactionStatus.RECEIVED:
+            transaction.cur_warehouse_id = current_user.warehouses_id
         db.commit()
         db.refresh(transaction)
         return transaction
@@ -201,12 +209,83 @@ class TransactionController:
     def get_type_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
         if (current_user.role != UserRole.LEADERTRANSACTION):
             return {"Not Authorized"}
-        
-        staff = db.query(UserModel).filter(UserModel.warehouses_id == current_user.warehouses_id, UserModel.role == UserRole.STAFFTRANSACTION).first()
 
-        forwards = db.query(TrackingModel).filter(TrackingModel.user_send == staff.id, TrackingModel.send_type==SendType.FORWARD).all()
-        backwards = db.query(TrackingModel).filter(TrackingModel.user_send == staff.id, TrackingModel.send_type==SendType.BACKWARD).all()
+
+
+
+        warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
+
+        send_to_gatherings = []
+        send_to_customers = []
+        receive_from_gatherings = []
+        receives_from_customers = []
+
+        send_to_gathering_tracks = db.query(TrackingModel).filter(TrackingModel.send_location_id == warehouse.location_id).all()
+        if send_to_gathering_tracks is not None:
+            for track in send_to_gathering_tracks:
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
+                if transaction is not None and transaction not in send_to_gatherings:
+                    send_to_gatherings.append(transaction)
+
+        send_to_customers_track = db.query(TrackingModel).filter(TrackingModel.send_location_id == warehouse.location_id, TrackingModel.send_type == SendType.BACKWARD).all()
+        if send_to_customers_track is not None:
+            for track in send_to_customers_track:
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
+                if transaction is not None and transaction not in send_to_customers:
+                    send_to_customers.append(transaction)
+        
+        receives_from_gathering_tracks = db.query(TrackingModel).filter(TrackingModel.receive_location_id == warehouse.location_id, TrackingModel.send_type == SendType.BACKWARD).all()
+        if receives_from_gathering_tracks is not None:
+            for track in receives_from_gathering_tracks:
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_i).first()
+                if transaction is not None and transaction not in receive_from_gatherings:
+                    receive_from_gatherings.append(transaction)
+
+        receives_from_customer_tracks = db.query(TrackingModel).filter(TrackingModel.receive_location_id == warehouse.location_id, TrackingModel.send_type == SendType.FORWARD).all()
+        if receives_from_customer_tracks is not None:
+            for track in receives_from_customer_tracks:
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
+                if transaction is not None and transaction not in receives_from_customers:
+                    receives_from_customers.append(transaction)
+
         return {
-            "forward": len(forwards),
-            "backward": len(backwards)
+            "send_to_gatherings": send_to_gatherings,
+            "send_to_customers": send_to_customers,
+            "receives_from_gatherings": receive_from_gatherings,
+            "receives_from_customers": receives_from_customers
             }
+    
+
+    def transaction_statistic(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+        # if (current_user.role != UserRole.LEADERTRANSACTION):
+        #     return {"Not Authorized"}
+        receive_from_gatherings = []
+        receives_from_customers = []
+        send_to_gatherings = []
+        send_to_customers = []
+
+        warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
+        
+        receive_transactions = db.query(TransactionModel).filter(TransactionModel.cur_warehouse_id == current_user.warehouses_id, TransactionModel.status == TransactionStatus.RECEIVED).all()
+        for transaction in receive_transactions:
+            tracking = db.query(TrackingModel).filter(TrackingModel.transaction_id == transaction.id, TrackingModel.receive_location_id==warehouse.location_id).first()
+            if(tracking.send_type == SendType.FORWARD):
+                receives_from_customers.append(transaction)
+            if(tracking.send_type == SendType.BACKWARD):
+                receive_from_gatherings.append(transaction)
+
+        send_transactions =  db.query(TransactionModel).filter(TransactionModel.cur_warehouse_id == current_user.warehouses_id, TransactionModel.status == TransactionStatus.SENDING).all()
+        for transaction in send_transactions:
+            tracking = db.query(TrackingModel).filter(TrackingModel.transaction_id == transaction.id, TrackingModel.send_location_id==warehouse.location_id).first()
+            if(tracking.send_type == SendType.FORWARD):
+                send_to_gatherings.append(transaction)
+            else:
+                send_to_customers.append(transaction)
+
+        return {
+            "receive_from_gatherings": receive_from_gatherings,
+            "receives_from_customers": receives_from_customers,
+            "send_to_gatherings": send_to_gatherings,
+            "send_to_customers": send_to_customers,
+        }
+

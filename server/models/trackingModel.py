@@ -7,6 +7,7 @@ from datetime import datetime
 class SendType(str, enum.Enum):
     FORWARD = "forward"
     BACKWARD = "backward"
+    GG = "gg"
 
 class TrackingModel(database.Base):
     __tablename__ = "trackings"

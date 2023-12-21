@@ -27,8 +27,8 @@ def create_forward_sending(transaction_id: int, db: Session = Depends(getDatabas
     return TransactionController.create_forward_sending(transaction_id=transaction_id, db=db, current_user=current_user)
 
 @router.put("/confirm/{transaction_id}")
-def confirm(transaction_id: int, status: TransactionStatus, db: Session = Depends(getDatabase)):
-    return TransactionController.confirm(transaction_id=transaction_id, status=status, db=db)
+def confirm(transaction_id: int, status: TransactionStatus, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+    return TransactionController.confirm(transaction_id=transaction_id, status=status, db=db, current_user=current_user)
 
 @router.post("/create_backward_sending/{transaction_id}")
 def create_backward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
@@ -38,9 +38,9 @@ def create_backward_sending(transaction_id: int, db: Session = Depends(getDataba
 def get_status_quantity(db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return TransactionController.get_status_quantity(db=db, current_user=current_user)
 
-@router.get("/get_type_quantity")
-def get_type_quantity(db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-    return TransactionController.get_type_quantity(db=db, current_user=current_user)
+@router.get("/transaction_statistic")
+def transaction_statistic(db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+    return TransactionController.transaction_statistic(db=db, current_user=current_user)
 
 
 # @router.put("/sending/{transaction_id}")
