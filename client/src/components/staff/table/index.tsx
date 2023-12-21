@@ -1,11 +1,9 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { PrinterIcon } from "@heroicons/react/24/outline";
 import useTable from "@/hooks/useTable";
 import TableFooter from "./tableFooter";
-import { ModalDetail } from "../modalDetails";
-import ReactToPrint from "react-to-print";
-import Receipt from "../componentToPrint";
+import { ModalDetail, ModalDetailPrint } from "../modalDetails";
+import Receipt from "../receipt";
 
 interface Props {
   headers: any[];
@@ -100,7 +98,6 @@ export const TableTransaction: React.FC<Props> = ({
                   {item}
                 </th>
               ))}
-              <th className={styles.tableHeader}></th>
             </tr>
           </thead>
           <tbody>
@@ -114,18 +111,7 @@ export const TableTransaction: React.FC<Props> = ({
                   className={styles.tableCellDetail}
                   onClick={() => setOpenDetail(item.id)}
                 >
-                  Chi tiết
-                </td>
-                <td className={styles.tableCellDetail}>
-                  <ReactToPrint
-                    trigger={() => (
-                      <div className="flex items-center justify-end gap-2">
-                        <PrinterIcon width={20} height={20} />
-                        Print
-                      </div>
-                    )}
-                    content={() => componentRef.current}
-                  />
+                  Chi tiết và in
                 </td>
               </tr>
             ))}
@@ -139,10 +125,14 @@ export const TableTransaction: React.FC<Props> = ({
         />
       </div>
       {openDetail && (
-        <ModalDetail openDetail={openDetail} setOpenDetail={setOpenDetail} />
+        <ModalDetailPrint
+          openDetail={openDetail}
+          setOpenDetail={setOpenDetail}
+          componentRef={componentRef}
+        />
       )}
       <div className="hidden">
-        <Receipt innerRef={componentRef} />
+        <Receipt innerRef={componentRef} id={openDetail} />
       </div>
     </>
   );
