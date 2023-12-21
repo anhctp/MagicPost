@@ -11,7 +11,11 @@ interface Props {
   rowsPerPage: number;
 }
 
-const Table: React.FC<Props> = ({ headers, data, rowsPerPage }) => {
+export const TableGathering: React.FC<Props> = ({
+  headers,
+  data,
+  rowsPerPage,
+}) => {
   const [page, setPage] = useState(1);
   const [openDetail, setOpenDetail] = useState<number | null>(null);
   const { slice, range } = useTable(data, page, rowsPerPage);
@@ -66,5 +70,3 @@ const Table: React.FC<Props> = ({ headers, data, rowsPerPage }) => {
     </>
   );
 };
-
-export default Table;

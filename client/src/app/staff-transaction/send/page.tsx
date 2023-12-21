@@ -1,5 +1,5 @@
 "use client";
-import Table from "@/components/staffGathering/table";
+import { TableGathering } from "@/components/staff/table";
 import { ReceiveFrom } from "@/services/staffGathering/staffGatheringHelpers";
 import { useState } from "react";
 
@@ -72,7 +72,7 @@ export default function StaffTransaction() {
           </option>
         </select>
       </div>
-      <Table headers={headers} data={data} rowsPerPage={5} />
+      <TableGathering headers={headers} data={data} rowsPerPage={5} />
     </>
   );
 }
