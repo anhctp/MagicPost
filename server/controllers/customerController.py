@@ -13,9 +13,12 @@ class CustomerController:
         if not db_customer:
             db_customer = CustomerModel(
                 fullname=customer.fullname,
-                phone=customer.phone
+                phone=customer.phone,
+                location_id=customer.location_id,
             )
             db.add(db_customer)
             db.commit()
             db.refresh(db_customer)
         return db_customer
+
+    # update if need
