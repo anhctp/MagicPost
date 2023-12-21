@@ -1,6 +1,6 @@
 "use client";
 import { TableTransaction } from "@/components/staff/table";
-import { ReceiveFrom } from "@/services/staffGathering/staffGatheringHelpers";
+import { ReceiveFrom } from "@/services/staff/staffGatheringHelpers";
 import { useState } from "react";
 
 export default function StaffTransaction() {
