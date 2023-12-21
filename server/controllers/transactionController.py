@@ -10,7 +10,7 @@ from datetime import datetime
 from models.transactionModel import TransactionModel, TransactionType, TransactionStatus
 from models.transactionDetailModel import TransactionDetailModel
 from models.transportationChargeModel import TransportationChargeModel
-from models.userModel import UserModel
+from models.userModel import UserModel, UserRole
 # from models.customerLocationModel import CustomerLocationModel
 from schemas.transactionSchema import CreateTransaction, CreateTransactionDetail, UpdateTransaction
 from schemas.trackingSchema import CreateTracking, UpdateTracking
@@ -178,7 +178,7 @@ class TransactionController:
         db.refresh(transaction)
         return transaction
     
-    def get_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+    def get_status_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
         # trackings = db.query(TrackingModel).filter(TrackingModel.receive_location_id==location_id).all()
         warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
         customers = db.query(CustomerModel).filter(CustomerModel.location_id == warehouse.location_id).all()
@@ -196,4 +196,17 @@ class TransactionController:
         return {
             "success": successes,
             "not_success": not_successes
+            }
+
+    def get_type_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+        if (current_user.role != UserRole.LEADERTRANSACTION):
+            return {"Not Authorized"}
+        
+        staff = db.query(UserModel).filter(UserModel.warehouses_id == current_user.warehouses_id, UserModel.role == UserRole.STAFFTRANSACTION).first()
+
+        forwards = db.query(TrackingModel).filter(TrackingModel.user_send == staff.id, TrackingModel.send_type==SendType.FORWARD).all()
+        backwards = db.query(TrackingModel).filter(TrackingModel.user_send == staff.id, TrackingModel.send_type==SendType.BACKWARD).all()
+        return {
+            "forward": len(forwards),
+            "backward": len(backwards)
             }
