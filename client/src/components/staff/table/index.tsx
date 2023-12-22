@@ -4,6 +4,7 @@ import useTable from "@/hooks/useTable";
 import TableFooter from "./tableFooter";
 import { ModalDetail, ModalDetailPrint } from "../modalDetails";
 import Receipt from "../receipt";
+import Image from "next/image";
 
 interface Props {
   headers: any[];
@@ -69,9 +70,14 @@ export const TableGathering: React.FC<Props> = ({
             />
           </>
         ) : (
-          <div className="flex items-center justify-center gap-2">
-            Chưa có đơn hàng nào{" "}
-            <span className="text-neutral-400 cursor-pointer">tạo ngay!</span>
+          <div className="flex flex-col items-center justify-center gap-4 p-4 text-neutral-400 text-xl">
+            <Image
+              src={"/deliveryMan.png"}
+              alt="delivery-man"
+              width={500}
+              height={500}
+            />
+            Chưa có đơn hàng nào tại đây!
           </div>
         )}
       </div>
@@ -140,9 +146,14 @@ export const TableTransaction: React.FC<Props> = ({
             />
           </>
         ) : (
-          <div className="flex items-center justify-center gap-2">
-            Chưa có đơn hàng nào{" "}
-            <span className="text-neutral-400 cursor-pointer">tạo ngay!</span>
+          <div className="flex flex-col items-center justify-center gap-4 p-4 text-neutral-400 text-xl">
+            <Image
+              src={"/deliveryMan.png"}
+              alt="delivery-man"
+              width={500}
+              height={500}
+            />
+            Chưa có đơn hàng nào tại đây!
           </div>
         )}
       </div>
