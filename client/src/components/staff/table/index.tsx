@@ -30,39 +30,50 @@ export const TableGathering: React.FC<Props> = ({
   return (
     <>
       <div className="flex flex-col gap-4">
-        <table className={styles.table}>
-          <thead className={styles.tableRowHeader}>
-            <tr>
-              {headers.map((item, index) => (
-                <th key={index} className={styles.tableHeader}>
-                  {item}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {slice.map((item) => (
-              <tr className={styles.tableRowItems} key={item.id}>
-                <td className={styles.tableCell}>{item.id}</td>
-                <td className={styles.tableCell}>{item.code}</td>
-                <td className={styles.tableCell}>{item.transaction_type}</td>
-                <td className={styles.tableCell}>{item.status}</td>
-                <td
-                  className={styles.tableCellDetail}
-                  onClick={() => setOpenDetail(item.id)}
-                >
-                  Chi tiết
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <TableFooter
-          range={range}
-          slice={slice}
-          setPage={setPage}
-          page={page}
-        />
+        {slice.length ? (
+          <>
+            <table className={styles.table}>
+              <thead className={styles.tableRowHeader}>
+                <tr>
+                  {headers.map((item, index) => (
+                    <th key={index} className={styles.tableHeader}>
+                      {item}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {slice.map((item) => (
+                  <tr className={styles.tableRowItems} key={item.id}>
+                    <td className={styles.tableCell}>{item.id}</td>
+                    <td className={styles.tableCell}>{item.code}</td>
+                    <td className={styles.tableCell}>
+                      {item.transaction_type}
+                    </td>
+                    <td className={styles.tableCell}>{item.status}</td>
+                    <td
+                      className={styles.tableCellDetail}
+                      onClick={() => setOpenDetail(item.id)}
+                    >
+                      Chi tiết
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <TableFooter
+              range={range}
+              slice={slice}
+              setPage={setPage}
+              page={page}
+            />
+          </>
+        ) : (
+          <div className="flex items-center justify-center gap-2">
+            Chưa có đơn hàng nào{" "}
+            <span className="text-neutral-400 cursor-pointer">tạo ngay!</span>
+          </div>
+        )}
       </div>
       {openDetail && (
         <ModalDetail openDetail={openDetail} setOpenDetail={setOpenDetail} />

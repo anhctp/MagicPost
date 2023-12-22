@@ -1,7 +1,7 @@
 "use client";
 import { TableTransaction } from "@/components/staff/table";
 import useTransactionPoint from "@/hooks/useTransactionPoint";
-import { ReceiveFrom } from "@/services/staff/transactionPointHelpers";
+import { Transfer } from "@/services/staff/transactionPointHelpers";
 import { useState } from "react";
 
 export default function StaffTransaction() {
@@ -14,7 +14,7 @@ export default function StaffTransaction() {
     "Chi tiết",
   ];
 
-  const [receiveFrom, setReceiveFrom] = useState<string>(ReceiveFrom.GATHERING);
+  const [receiveFrom, setReceiveFrom] = useState<string>(Transfer.GATHERING);
   return (
     <>
       <div className="flex justify-start items-center">
@@ -24,14 +24,14 @@ export default function StaffTransaction() {
             setReceiveFrom(e.target.value);
           }}
         >
-          <option value={ReceiveFrom.GATHERING}>{ReceiveFrom.GATHERING}</option>
-          <option value={ReceiveFrom.CUSTOMER}>{ReceiveFrom.CUSTOMER}</option>
+          <option value={Transfer.GATHERING}>{Transfer.GATHERING}</option>
+          <option value={Transfer.CUSTOMER}>{Transfer.CUSTOMER}</option>
         </select>
       </div>
       <TableTransaction
         headers={headers}
         data={
-          receiveFrom === ReceiveFrom.CUSTOMER
+          receiveFrom === Transfer.CUSTOMER
             ? receiveFromCustomer
             : receiveFromGathering
         }
