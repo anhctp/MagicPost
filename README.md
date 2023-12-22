@@ -4,7 +4,7 @@
 Delivery management system.
 Features:
 
-- Transaction offices:
+- Transaction points:
     + Direct transactions with customers.
     + Transactions with the nearest collection points.
 - Gathering points:
@@ -28,6 +28,6 @@ pip install -r requirements.txt
 uvicorn main:app -reload
 # Run frontend
 cd client
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
