@@ -1,8 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 from models.wardModel import WardModel
-from models.warehouseModel import WarehouseModel
+from models.warehouseModel import TypeWarehouse, WarehouseModel
 from models.trackingModel import SendType, TrackingModel
 from controllers.userController import verifyToken
 from database import getDatabase
@@ -11,22 +10,16 @@ from models.transactionModel import TransactionModel, TransactionType, Transacti
 from models.transactionDetailModel import TransactionDetailModel
 from models.transportationChargeModel import TransportationChargeModel
 from models.userModel import UserModel, UserRole
-# from models.customerLocationModel import CustomerLocationModel
-from schemas.transactionSchema import CreateTransaction, CreateTransactionDetail, UpdateTransaction
-from schemas.trackingSchema import CreateTracking, UpdateTracking
+from schemas.transactionSchema import CreateTransaction, CreateTransactionDetail
+from schemas.trackingSchema import CreateTracking
 from controllers.trackingController import TrackingController
 from controllers.customerController import CustomerController
 import random
-
 from models.customerModel import CustomerModel
-from models.locationModel import LocationModel
+from controllers.gatheringController import GatheringController
 
 class TransactionController:
-    def getAllTransaction(db: Session = Depends(getDatabase)):
-        return db.query(TransactionModel).all()
-    
     def createTransaction(transaction: CreateTransaction, detail: CreateTransactionDetail, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-        
         sender = CustomerController.createCustomer(transaction.sender_info, db=db)
         receiver = CustomerController.createCustomer(transaction.receiver_info, db=db)
         
@@ -48,7 +41,6 @@ class TransactionController:
         db.refresh(db_transaction)
 
         transaction_id = db_transaction.id
-
         db_detail = TransactionDetailModel(
             transaction_id=transaction_id,
             item_type=detail.item_type,
@@ -82,7 +74,6 @@ class TransactionController:
         sender = CustomerController.createCustomer(transaction.sender_info, db=db)
         receiver = CustomerController.createCustomer(transaction.receiver_info, db=db)
         
-        # sender_location = db.query(CustomerLocationModel).filter(CustomerLocationModel.customer_id==sender.id, CustomerLocationModel.location_id==transaction.sender_info.location_id).first()
         warehouse = db.query(WarehouseModel).filter(WarehouseModel.location_id==transaction.sender_info.location_id).first()
         staff = db.query(UserModel).filter(UserModel.warehouses_id==warehouse.id).first()
         if not staff:
@@ -97,7 +88,6 @@ class TransactionController:
             receive_location_id=sender.location_id,
             send_type=SendType.FORWARD
         )
-        
         TrackingController.createTracking(transaction_id=transaction_id, tracking=tracking, db=db)
         
         return db_transaction
@@ -108,8 +98,6 @@ class TransactionController:
     #     3. Reduce queries as few as possible.
     
     def create_forward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-        # warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
-        # if warehouse.type 
         transaction = db.query(TransactionModel).filter(TransactionModel.id==transaction_id).first()
         transaction.status = TransactionStatus.SENDING
         warehouse = db.query(WarehouseModel).filter(WarehouseModel.id==current_user.warehouses_id).first()
@@ -187,7 +175,6 @@ class TransactionController:
         return transaction
     
     def get_status_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-        # trackings = db.query(TrackingModel).filter(TrackingModel.receive_location_id==location_id).all()
         warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
         customers = db.query(CustomerModel).filter(CustomerModel.location_id == warehouse.location_id).all()
         
@@ -206,21 +193,21 @@ class TransactionController:
             "not_success": not_successes
             }
 
-    def get_type_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-        if (current_user.role != UserRole.LEADERTRANSACTION):
+    def get_type_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken), warehouse_id=None):
+        if (current_user.role != UserRole.LEADERTRANSACTION and current_user.role != UserRole.CEO):
             return {"Not Authorized"}
 
-
-
-
-        warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
+        if warehouse_id == None:
+            warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
+        else:
+            warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == warehouse_id).first()
 
         send_to_gatherings = []
         send_to_customers = []
         receive_from_gatherings = []
         receives_from_customers = []
 
-        send_to_gathering_tracks = db.query(TrackingModel).filter(TrackingModel.send_location_id == warehouse.location_id).all()
+        send_to_gathering_tracks = db.query(TrackingModel).filter(TrackingModel.send_location_id == warehouse.location_id, TrackingModel.send_type == SendType.FORWARD).all()
         if send_to_gathering_tracks is not None:
             for track in send_to_gathering_tracks:
                 transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
@@ -237,7 +224,7 @@ class TransactionController:
         receives_from_gathering_tracks = db.query(TrackingModel).filter(TrackingModel.receive_location_id == warehouse.location_id, TrackingModel.send_type == SendType.BACKWARD).all()
         if receives_from_gathering_tracks is not None:
             for track in receives_from_gathering_tracks:
-                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_i).first()
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
                 if transaction is not None and transaction not in receive_from_gatherings:
                     receive_from_gatherings.append(transaction)
 
@@ -257,8 +244,8 @@ class TransactionController:
     
 
     def transaction_statistic(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-        # if (current_user.role != UserRole.LEADERTRANSACTION):
-        #     return {"Not Authorized"}
+        if (current_user.role != UserRole.LEADERTRANSACTION):
+            return {"Not Authorized"}
         receive_from_gatherings = []
         receives_from_customers = []
         send_to_gatherings = []
@@ -289,3 +276,19 @@ class TransactionController:
             "send_to_customers": send_to_customers,
         }
 
+    def getAllTransaction(db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+        if (current_user.role != UserRole.CEO):
+            return {"Not Authorized"}
+        
+        return db.query(TransactionModel).all()
+
+    def mangage_transaction(warehouse_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+        if (current_user.role != UserRole.CEO):
+            return {"Not Authorized"}
+        
+        warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == warehouse_id).first()
+        if(warehouse.type == TypeWarehouse.TRANSACTION):
+            return TransactionController.get_type_quantity(db=db, current_user=current_user, warehouse_id=warehouse_id)
+        
+        if(warehouse.type == TypeWarehouse.GATHERING):
+            return GatheringController.get_type_quantity(db=db, current_user=current_user, warehouse_id=warehouse_id)

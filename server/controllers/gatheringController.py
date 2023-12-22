@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import getDatabase
 from controllers.userController import verifyToken
@@ -14,7 +14,7 @@ from controllers.trackingController import TrackingController
 
 
 class GatheringController:
-    def create_forward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+    def create_gg_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
         transaction = db.query(TransactionModel).filter(TransactionModel.id==transaction_id).first()
         transaction.status = TransactionStatus.SENDING
         warehouse = db.query(WarehouseModel).filter(WarehouseModel.id==current_user.warehouses_id).first()
@@ -50,19 +50,6 @@ class GatheringController:
         db_tracking = TrackingController.createTracking(transaction_id=transaction_id, tracking=tracking, db=db)
         return db_tracking
     
-    def get_type_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-        if (current_user.role != UserRole.LEADERGATHERING):
-            return {"Not Authorized"}
-        
-        staff = db.query(UserModel).filter(UserModel.warehouses_id == current_user.warehouses_id, UserModel.role == UserRole.STAFFGATHERING).first()
-
-        forwards = db.query(TrackingModel).filter(TrackingModel.user_send == staff.id, TrackingModel.send_type==SendType.FORWARD).all()
-        backwards = db.query(TrackingModel).filter(TrackingModel.user_send == staff.id, TrackingModel.send_type==SendType.BACKWARD).all()
-        return {
-            "forward": len(forwards),
-            "backward": len(backwards)
-            }
-    
     def confirm(
         transaction_id: int,
         status: TransactionStatus,
@@ -85,9 +72,57 @@ class GatheringController:
         db.refresh(transaction)
         return transaction
     
+    def get_type_quantity(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken), warehouse_id=None):
+        if (current_user.role != UserRole.LEADERGATHERING and current_user.role != UserRole.CEO):
+            return {"Not Authorized"}
+        receive_from_gatherings = []
+        receives_from_transactions = []
+        send_to_transactions = []
+        send_to_gatherings = []
+        
+        if warehouse_id == None:
+            warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == current_user.warehouses_id).first()
+        else:
+            warehouse = db.query(WarehouseModel).filter(WarehouseModel.id == warehouse_id).first()
+
+        receive_from_gathering_tracks = db.query(TrackingModel).filter(TrackingModel.receive_location_id == warehouse.location_id, TrackingModel.send_type == SendType.GG).all()
+        if receive_from_gathering_tracks is not None:
+            for track in receive_from_gathering_tracks:
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
+                if transaction is not None and transaction not in receive_from_gatherings:
+                    receive_from_gatherings.append(transaction)
+
+        receives_from_transaction_tracks = db.query(TrackingModel).filter(TrackingModel.receive_location_id == warehouse.location_id, TrackingModel.send_type == SendType.FORWARD).all()
+        if receives_from_transaction_tracks is not None:
+            for track in receives_from_transaction_tracks:
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
+                if transaction is not None and transaction not in receives_from_transactions:
+                    receives_from_transactions.append(transaction)
+
+        send_to_transaction_tracks = db.query(TrackingModel).filter(TrackingModel.send_location_id == warehouse.location_id, TrackingModel.send_type == SendType.BACKWARD).all()
+        if send_to_transaction_tracks is not None:
+            for track in send_to_transaction_tracks:
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
+                if transaction is not None and transaction not in send_to_transactions:
+                    send_to_transactions.append(transaction)
+
+        send_to_gathering_tracks = db.query(TrackingModel).filter(TrackingModel.send_location_id == warehouse.location_id, TrackingModel.send_type == SendType.GG).all()
+        if send_to_gathering_tracks is not None:
+            for track in send_to_gathering_tracks:
+                transaction = db.query(TransactionModel).filter(TransactionModel.id == track.transaction_id).first()
+                if transaction is not None and transaction not in send_to_gatherings:
+                    send_to_gatherings.append(transaction)
+
+        return {
+            "receive_from_gatherings": receive_from_gatherings,
+            "receives_from_transactions": receives_from_transactions,
+            "send_to_gatherings": send_to_gatherings,
+            "send_to_transactions": send_to_transactions,
+        }
+
     def gathering_statistic(db: Session=Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-        # if (current_user.role != UserRole.LEADERTRANSACTION):
-        #     return {"Not Authorized"}
+        if (current_user.role != UserRole.LEADERGATHERING):
+            return {"Not Authorized"}
         receive_from_gatherings = []
         receives_from_transactions = []
         send_to_transactions = []

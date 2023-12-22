@@ -1,11 +1,8 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from schemas.transactionSchema import UpdateTransaction
-from controllers.transactionController import TransactionController
 from database import getDatabase
-from controllers.userController import UserController, verifyToken
-from schemas.userSchema import RegisterUser, Login
-from models.userModel import UserModel, UserRole
+from controllers.userController import verifyToken
+from models.userModel import UserModel
 from models.transactionModel import TransactionStatus
 from controllers.gatheringController import GatheringController
 
@@ -19,9 +16,9 @@ router = APIRouter(
 def confirm(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return GatheringController.confirm(transaction_id=transaction_id, status=TransactionStatus.RECEIVED, db=db, current_user=current_user)
 
-@router.put("/create_forward_sending/{transaction_id}")
-def create_forward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
-    return GatheringController.create_forward_sending(transaction_id=transaction_id, db=db, current_user=current_user)
+@router.put("/create_gg_sending/{transaction_id}")
+def create_gg_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+    return GatheringController.create_gg_sending(transaction_id=transaction_id, db=db, current_user=current_user)
 
 @router.put("/create_backward_sending/{transaction_id}")
 def create_backward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
