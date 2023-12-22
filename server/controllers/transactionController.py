@@ -17,6 +17,7 @@ from controllers.customerController import CustomerController
 import random
 from models.customerModel import CustomerModel
 from controllers.gatheringController import GatheringController
+from models.districtModel import DistrictModel
 
 class TransactionController:
     def createTransaction(transaction: CreateTransaction, detail: CreateTransactionDetail, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
@@ -92,6 +93,21 @@ class TransactionController:
         
         return db_transaction
     
+    def cal_total_cost(send_location_id, receive_location_id, item_weight, db: Session = Depends(getDatabase), in_division_base_charge=5000, out_division_base_charge=8000, surchage_rate=0.2):
+        send_ward = db.query(WardModel).filter(WardModel.id == send_location_id).first()
+        send_district = db.query(DistrictModel).filter(DistrictModel.id == send_ward.district_id).first()
+
+        receive_ward = db.query(WardModel).filter(WardModel.id == receive_location_id).first()
+        receive_district = db.query(DistrictModel).filter(DistrictModel.id == receive_ward.district_id).first()
+        base_charge = 0
+        if(send_district.division_id == receive_district.division_id):
+            base_charge = in_division_base_charge
+        else:
+            base_charge = out_division_base_charge
+        surchage = base_charge * surchage_rate
+        total = base_charge * item_weight + surchage
+        return total
+
     # TODO:
     #     1. Caculate total cod.
     #     2. Join customer_locations table to get value.
