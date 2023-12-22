@@ -1,9 +1,10 @@
-import useAuthStore from "@/stores/authStore";
+"use client";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://localhost:8000/api";
 
-const token = useAuthStore.getState().token;
+const token =
+  typeof window !== "undefined" ? localStorage.getItem("token") : "";
 
 export const getTransactionById = (idTransaction: number) => {
   return axios.get(`/transaction/get_transaction/${idTransaction}`);

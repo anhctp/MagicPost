@@ -101,9 +101,9 @@ export const TableTransaction: React.FC<Props> = ({
             </tr>
           </thead>
           <tbody>
-            {slice.map((item) => (
+            {slice.map((item, index) => (
               <tr className={styles.tableRowItems} key={item.id}>
-                <td className={styles.tableCell}>{item.id}</td>
+                <td className={styles.tableCell}>{index + 1}</td>
                 <td className={styles.tableCell}>{item.code}</td>
                 <td className={styles.tableCell}>{item.transaction_type}</td>
                 <td className={styles.tableCell}>{item.status}</td>
