@@ -4,6 +4,7 @@ import useTable from "@/hooks/useTable";
 import TableFooter from "./tableFooter";
 import { ModalDetail, ModalDetailPrint } from "../modalDetails";
 import Receipt from "../receipt";
+import Image from "next/image";
 
 interface Props {
   headers: any[];
@@ -30,39 +31,55 @@ export const TableGathering: React.FC<Props> = ({
   return (
     <>
       <div className="flex flex-col gap-4">
-        <table className={styles.table}>
-          <thead className={styles.tableRowHeader}>
-            <tr>
-              {headers.map((item, index) => (
-                <th key={index} className={styles.tableHeader}>
-                  {item}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {slice.map((item) => (
-              <tr className={styles.tableRowItems} key={item.id}>
-                <td className={styles.tableCell}>{item.id}</td>
-                <td className={styles.tableCell}>{item.code}</td>
-                <td className={styles.tableCell}>{item.transaction_type}</td>
-                <td className={styles.tableCell}>{item.status}</td>
-                <td
-                  className={styles.tableCellDetail}
-                  onClick={() => setOpenDetail(item.id)}
-                >
-                  Chi tiết
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <TableFooter
-          range={range}
-          slice={slice}
-          setPage={setPage}
-          page={page}
-        />
+        {slice.length ? (
+          <>
+            <table className={styles.table}>
+              <thead className={styles.tableRowHeader}>
+                <tr>
+                  {headers.map((item, index) => (
+                    <th key={index} className={styles.tableHeader}>
+                      {item}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {slice.map((item) => (
+                  <tr className={styles.tableRowItems} key={item.id}>
+                    <td className={styles.tableCell}>{item.id}</td>
+                    <td className={styles.tableCell}>{item.code}</td>
+                    <td className={styles.tableCell}>
+                      {item.transaction_type}
+                    </td>
+                    <td className={styles.tableCell}>{item.status}</td>
+                    <td
+                      className={styles.tableCellDetail}
+                      onClick={() => setOpenDetail(item.id)}
+                    >
+                      Chi tiết
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <TableFooter
+              range={range}
+              slice={slice}
+              setPage={setPage}
+              page={page}
+            />
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-4 p-4 text-neutral-400 text-xl">
+            <Image
+              src={"/deliveryMan.png"}
+              alt="delivery-man"
+              width={500}
+              height={500}
+            />
+            Chưa có đơn hàng nào tại đây!
+          </div>
+        )}
       </div>
       {openDetail && (
         <ModalDetail openDetail={openDetail} setOpenDetail={setOpenDetail} />
@@ -90,39 +107,55 @@ export const TableTransaction: React.FC<Props> = ({
   return (
     <>
       <div className="flex flex-col gap-4">
-        <table className={styles.table}>
-          <thead className={styles.tableRowHeader}>
-            <tr>
-              {headers.map((item, index) => (
-                <th key={index} className={styles.tableHeader}>
-                  {item}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {slice.map((item) => (
-              <tr className={styles.tableRowItems} key={item.id}>
-                <td className={styles.tableCell}>{item.id}</td>
-                <td className={styles.tableCell}>{item.code}</td>
-                <td className={styles.tableCell}>{item.transaction_type}</td>
-                <td className={styles.tableCell}>{item.status}</td>
-                <td
-                  className={styles.tableCellDetail}
-                  onClick={() => setOpenDetail(item.id)}
-                >
-                  Chi tiết và in
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <TableFooter
-          range={range}
-          slice={slice}
-          setPage={setPage}
-          page={page}
-        />
+        {slice.length ? (
+          <>
+            <table className={styles.table}>
+              <thead className={styles.tableRowHeader}>
+                <tr>
+                  {headers.map((item, index) => (
+                    <th key={index} className={styles.tableHeader}>
+                      {item}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {slice.map((item, index) => (
+                  <tr className={styles.tableRowItems} key={item.id}>
+                    <td className={styles.tableCell}>{index + 1}</td>
+                    <td className={styles.tableCell}>{item.code}</td>
+                    <td className={styles.tableCell}>
+                      {item.transaction_type}
+                    </td>
+                    <td className={styles.tableCell}>{item.status}</td>
+                    <td
+                      className={styles.tableCellDetail}
+                      onClick={() => setOpenDetail(item.id)}
+                    >
+                      Chi tiết và in
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <TableFooter
+              range={range}
+              slice={slice}
+              setPage={setPage}
+              page={page}
+            />
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-4 p-4 text-neutral-400 text-xl">
+            <Image
+              src={"/deliveryMan.png"}
+              alt="delivery-man"
+              width={500}
+              height={500}
+            />
+            Chưa có đơn hàng nào tại đây!
+          </div>
+        )}
       </div>
       {openDetail && (
         <ModalDetailPrint

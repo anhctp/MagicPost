@@ -1,53 +1,11 @@
 "use client";
 import { TableGathering } from "@/components/staff/table";
-import { ReceiveFrom } from "@/services/staff/staffGatheringHelpers";
+import useTransactionPoint from "@/hooks/useTransactionPoint";
+import { Transfer } from "@/services/staff/transactionPointHelpers";
 import { useState } from "react";
 
 export default function StaffTransaction() {
-  const data = [
-    {
-      id: 1,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 2,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 3,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 4,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 5,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 6,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 7,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-  ];
+  const { sendToCustomer, sendToGathering } = useTransactionPoint();
   const headers = [
     "STT",
     "Mã đơn hàng",
@@ -56,7 +14,7 @@ export default function StaffTransaction() {
     "Chi tiết",
   ];
 
-  const [receiveFrom, setReceiveFrom] = useState<string>(ReceiveFrom.GATHERING);
+  const [receiveFrom, setReceiveFrom] = useState<string>(Transfer.GATHERING);
   return (
     <>
       <div className="flex justify-start items-center">
@@ -66,13 +24,17 @@ export default function StaffTransaction() {
             setReceiveFrom(e.target.value);
           }}
         >
-          <option value={ReceiveFrom.GATHERING}>{ReceiveFrom.GATHERING}</option>
-          <option value={ReceiveFrom.TRANSACTION}>
-            {ReceiveFrom.TRANSACTION}
-          </option>
+          <option value={Transfer.GATHERING}>{Transfer.GATHERING}</option>
+          <option value={Transfer.CUSTOMER}>{Transfer.CUSTOMER}</option>
         </select>
       </div>
-      <TableGathering headers={headers} data={data} rowsPerPage={5} />
+      <TableGathering
+        headers={headers}
+        data={
+          receiveFrom === Transfer.CUSTOMER ? sendToCustomer : sendToGathering
+        }
+        rowsPerPage={5}
+      />
     </>
   );
 }
