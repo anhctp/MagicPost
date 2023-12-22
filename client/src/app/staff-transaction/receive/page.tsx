@@ -1,53 +1,11 @@
 "use client";
 import { TableTransaction } from "@/components/staff/table";
-import { ReceiveFrom } from "@/services/staff/staffGatheringHelpers";
+import useTransactionPoint from "@/hooks/useTransactionPoint";
+import { ReceiveFrom } from "@/services/staff/transactionPointHelpers";
 import { useState } from "react";
 
 export default function StaffTransaction() {
-  const data = [
-    {
-      id: 1,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 2,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 3,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 4,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 5,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 6,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-    {
-      id: 7,
-      code: "MP264989219012",
-      transaction_type: "Deliver",
-      status: "processing",
-    },
-  ];
+  const { receiveFromCustomer, receiveFromGathering } = useTransactionPoint();
   const headers = [
     "STT",
     "Mã đơn hàng",
@@ -67,12 +25,18 @@ export default function StaffTransaction() {
           }}
         >
           <option value={ReceiveFrom.GATHERING}>{ReceiveFrom.GATHERING}</option>
-          <option value={ReceiveFrom.TRANSACTION}>
-            {ReceiveFrom.TRANSACTION}
-          </option>
+          <option value={ReceiveFrom.CUSTOMER}>{ReceiveFrom.CUSTOMER}</option>
         </select>
       </div>
-      <TableTransaction headers={headers} data={data} rowsPerPage={5} />
+      <TableTransaction
+        headers={headers}
+        data={
+          receiveFrom === ReceiveFrom.CUSTOMER
+            ? receiveFromCustomer
+            : receiveFromGathering
+        }
+        rowsPerPage={5}
+      />
     </>
   );
 }

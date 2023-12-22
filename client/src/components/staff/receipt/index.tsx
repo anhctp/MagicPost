@@ -10,9 +10,6 @@ interface ReceiptProps {
 
 const Receipt: React.FC<ReceiptProps> = ({ id, innerRef }) => {
   const { data } = useReceipt(id!);
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
   return (
     <div ref={innerRef} className="w-full flex flex-col p-4">
       <div className="w-full flex justify-around items-center">
