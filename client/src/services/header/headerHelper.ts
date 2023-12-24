@@ -7,7 +7,11 @@ export enum StaffTransactionItem {
   RECEIVE = "receive",
   STATISTIC = "statistic",
 }
-
+export enum CEOItem {
+  SYSTEM = 'manage system', 
+  ACCOUNT = 'manage account leader', 
+  STATISTIC = 'statistic',
+}
 export const headerStaffGatheringItem = [
   {
     id: StaffGatheringItem.RECEIVE,
@@ -36,5 +40,23 @@ export const headerStaffTransactionItem = [
     id: StaffTransactionItem.STATISTIC,
     label: "Thống kê",
     link: "/staff-transaction/statistic",
+  },
+];
+
+export const headerCEOItem = [
+  {
+    id: CEOItem.SYSTEM,
+    label: "Quản lý hệ thống",
+    link: "/ceo/system",
+  },
+  {
+    id: CEOItem.ACCOUNT,
+    label: "Quản lý tài khoản trưởng điểm",
+    link: "/ceo/account",
+  },
+  {
+    id: CEOItem.STATISTIC,
+    label: "Thống kê",
+    link: "/ceo/statistic",
   },
 ];
