@@ -7,10 +7,10 @@ export default function CustomerLayout({
     children: React.ReactNode,
   }) {
     return (
-      <section className="px-5">
+      <section className="px-1 h-full flex flex-col">
         {/* Include shared UI here e.g. a header or sidebar */}
-        <NavBar/>   
-        <section className="py-3">{children}</section>
+        <section className=""><NavBar/> </section>  
+        <section className="py-3 w-full h-[84vh] overflow-auto">{children}</section>
       </section>
     )
   }
