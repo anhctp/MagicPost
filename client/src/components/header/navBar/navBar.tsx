@@ -20,7 +20,7 @@ export default function NavBar() {
   const { userRole } = useUserStore();
 
   return (
-    <div className="w-full h-fit justify-between items-center py-3 top-0 z-50 bg-white inline-flex">
+    <div className="w-full h-fit justify-between items-center sticky top-0 z-50 bg-white inline-flex">
       <Link href={"/"} className="h-20 w-fit justify-start items-center">
         <img src="/favicon.ico" className="h-20" />
       </Link>
