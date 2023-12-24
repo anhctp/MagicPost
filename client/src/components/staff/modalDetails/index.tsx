@@ -1,16 +1,18 @@
 import React from "react";
 import { PrinterIcon } from "@heroicons/react/24/outline";
 import ReactToPrint from "react-to-print";
-import useReceipt from "@/hooks/useReceipt";
 
 interface ModalDetailProps {
-  openDetail: number | null;
   setOpenDetail: React.Dispatch<React.SetStateAction<number | null>>;
+  componentRef: React.RefObject<HTMLDivElement> | undefined;
+  transactions: any;
+  locationSender: any;
+  locationReceiver: any;
 }
 
 export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
-  const { openDetail, setOpenDetail } = props;
-  const { data, locationReceiver, locationSender } = useReceipt(openDetail!);
+  const { setOpenDetail, transactions, locationSender, locationReceiver } =
+    props;
   const styles = {
     key: "font-medium italic",
     value: "font-light italic",
@@ -32,22 +34,29 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
             {/*body*/}
             <div className="relative p-6 flex flex-col gap-3 text-xl">
               <div>
-                Mã đơn hàng: <span className="font-medium">{data?.code}</span>
+                Mã đơn hàng:{" "}
+                <span className="font-medium">{transactions?.code}</span>
               </div>
               <div>
                 Thông tin nhân viên
                 <div className="px-10">
                   <div className="text-base">
                     <span className={styles.key}>Họ và tên: </span>
-                    <span className={styles.value}>{data?.user.fullname}</span>
+                    <span className={styles.value}>
+                      {transactions?.user.fullname}
+                    </span>
                   </div>
                   <div className="text-base">
                     <span className={styles.key}>Giới tính: </span>
-                    <span className={styles.value}>{data?.user.gender}</span>
+                    <span className={styles.value}>
+                      {transactions?.user.gender}
+                    </span>
                   </div>
                   <div className="text-base">
                     <span className={styles.key}>Số điện thoại: </span>
-                    <span className={styles.value}>{data?.user.phone}</span>
+                    <span className={styles.value}>
+                      {transactions?.user.phone}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -57,7 +66,7 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
                   <div className="text-base">
                     <span className={styles.key}>Id người gửi: </span>
                     <span className={styles.value}>
-                      {data?.sender.customer_id}
+                      {transactions?.sender.customer_id}
                     </span>
                   </div>
                   <div className="text-base">
@@ -72,7 +81,7 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
                   <div className="text-base">
                     <span className={styles.key}>Id người nhận: </span>
                     <span className={styles.value}>
-                      {data?.sender.customer_id}
+                      {transactions?.sender.customer_id}
                     </span>
                   </div>
                   <div className="text-base">
@@ -87,7 +96,7 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
                   <div className="text-base">
                     <span className={styles.key}>Loại hàng gửi: </span>
                     <span className={styles.value}>
-                      {data?.detail.item_type === "documents"
+                      {transactions?.detail.item_type === "documents"
                         ? "Tài liệu"
                         : "Hàng hoá"}
                     </span>
@@ -96,56 +105,56 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
                     <span className={styles.key}>Chi tiết: </span>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Số lượng: {data?.detail.item_quantity}
+                      Số lượng: {transactions?.detail.item_quantity}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Khối lượng: {data?.detail.item_weight}
+                      Khối lượng: {transactions?.detail.item_weight}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Trị giá: {data?.detail.item_value}
+                      Trị giá: {transactions?.detail.item_value}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
                       Giấy tờ đính kèm:{" "}
-                      {data?.detail.item_attached
-                        ? data.detail.item_attached
+                      {transactions?.detail.item_attached
+                        ? transactions.detail.item_attached
                         : "Không có"}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
                       Dịch vụ đặc biệt:{" "}
-                      {data?.detail.item_description
-                        ? data.detail.item_description
+                      {transactions?.detail.item_description
+                        ? transactions.detail.item_description
                         : "Không có"}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Hàng không gửi được: {data?.detail.item_return}
+                      Hàng không gửi được: {transactions?.detail.item_return}
                     </div>
                   </div>
                   <div className="text-base">
                     <span className={styles.key}>Cước: </span>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Cước chính: {data?.charge.detail.base}đ
+                      Cước chính: {transactions?.charge.detail.base}đ
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Phụ phí: {data?.charge.detail.surcharge}đ
+                      Phụ phí: {transactions?.charge.detail.surcharge}đ
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Cước GTGT: {data?.charge.detail.vat}đ
+                      Cước GTGT: {transactions?.charge.detail.vat}đ
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Thu khác: {data?.charge.detail.other}đ
+                      Thu khác: {transactions?.charge.detail.other}đ
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Tổng thu: {data?.charge.total}đ
+                      Tổng thu: {transactions?.charge.total}đ
                     </div>
                   </div>
                 </div>
@@ -176,15 +185,14 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
   );
 };
 
-interface ModalDetailPrintProps {
-  openDetail: number | null;
-  setOpenDetail: React.Dispatch<React.SetStateAction<number | null>>;
-  componentRef: React.RefObject<HTMLDivElement>;
-}
-
-export const ModalDetailPrint: React.FC<ModalDetailPrintProps> = (props) => {
-  const { openDetail, componentRef, setOpenDetail } = props;
-  const { data, locationReceiver, locationSender } = useReceipt(openDetail!);
+export const ModalDetailPrint: React.FC<ModalDetailProps> = (props) => {
+  const {
+    componentRef,
+    setOpenDetail,
+    transactions,
+    locationSender,
+    locationReceiver,
+  } = props;
   const styles = {
     key: "font-medium italic",
     value: "font-light italic",
@@ -206,22 +214,29 @@ export const ModalDetailPrint: React.FC<ModalDetailPrintProps> = (props) => {
             {/*body*/}
             <div className="relative p-6 flex flex-col gap-3 text-xl">
               <div>
-                Mã đơn hàng: <span className="font-medium">{data?.code}</span>
+                Mã đơn hàng:{" "}
+                <span className="font-medium">{transactions?.code}</span>
               </div>
               <div>
                 Thông tin nhân viên
                 <div className="px-10">
                   <div className="text-base">
                     <span className={styles.key}>Họ và tên: </span>
-                    <span className={styles.value}>{data?.user.fullname}</span>
+                    <span className={styles.value}>
+                      {transactions?.user.fullname}
+                    </span>
                   </div>
                   <div className="text-base">
                     <span className={styles.key}>Giới tính: </span>
-                    <span className={styles.value}>{data?.user.gender}</span>
+                    <span className={styles.value}>
+                      {transactions?.user.gender}
+                    </span>
                   </div>
                   <div className="text-base">
                     <span className={styles.key}>Số điện thoại: </span>
-                    <span className={styles.value}>{data?.user.phone}</span>
+                    <span className={styles.value}>
+                      {transactions?.user.phone}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -231,7 +246,7 @@ export const ModalDetailPrint: React.FC<ModalDetailPrintProps> = (props) => {
                   <div className="text-base">
                     <span className={styles.key}>Id người gửi: </span>
                     <span className={styles.value}>
-                      {data?.sender.customer_id}
+                      {transactions?.sender.customer_id}
                     </span>
                   </div>
                   <div className="text-base">
@@ -246,7 +261,7 @@ export const ModalDetailPrint: React.FC<ModalDetailPrintProps> = (props) => {
                   <div className="text-base">
                     <span className={styles.key}>Id người nhận: </span>
                     <span className={styles.value}>
-                      {data?.sender.customer_id}
+                      {transactions?.sender.customer_id}
                     </span>
                   </div>
                   <div className="text-base">
@@ -261,7 +276,7 @@ export const ModalDetailPrint: React.FC<ModalDetailPrintProps> = (props) => {
                   <div className="text-base">
                     <span className={styles.key}>Loại hàng gửi: </span>
                     <span className={styles.value}>
-                      {data?.detail.item_type === "documents"
+                      {transactions?.detail.item_type === "documents"
                         ? "Tài liệu"
                         : "Hàng hoá"}
                     </span>
@@ -270,56 +285,56 @@ export const ModalDetailPrint: React.FC<ModalDetailPrintProps> = (props) => {
                     <span className={styles.key}>Chi tiết: </span>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Số lượng: {data?.detail.item_quantity}
+                      Số lượng: {transactions?.detail.item_quantity}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Khối lượng: {data?.detail.item_weight}
+                      Khối lượng: {transactions?.detail.item_weight}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Trị giá: {data?.detail.item_value}
+                      Trị giá: {transactions?.detail.item_value}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
                       Giấy tờ đính kèm:{" "}
-                      {data?.detail.item_attached
-                        ? data.detail.item_attached
+                      {transactions?.detail.item_attached
+                        ? transactions.detail.item_attached
                         : "Không có"}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
                       Dịch vụ đặc biệt:{" "}
-                      {data?.detail.item_description
-                        ? data.detail.item_description
+                      {transactions?.detail.item_description
+                        ? transactions.detail.item_description
                         : "Không có"}
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Hàng không gửi được: {data?.detail.item_return}
+                      Hàng không gửi được: {transactions?.detail.item_return}
                     </div>
                   </div>
                   <div className="text-base">
                     <span className={styles.key}>Cước: </span>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Cước chính: {data?.charge.detail.base}đ
+                      Cước chính: {transactions?.charge.detail.base}đ
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Phụ phí: {data?.charge.detail.surcharge}đ
+                      Phụ phí: {transactions?.charge.detail.surcharge}đ
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Cước GTGT: {data?.charge.detail.vat}đ
+                      Cước GTGT: {transactions?.charge.detail.vat}đ
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Thu khác: {data?.charge.detail.other}đ
+                      Thu khác: {transactions?.charge.detail.other}đ
                     </div>
                     <div className={`${styles.value} px-4`}>
                       {" "}
-                      Tổng thu: {data?.charge.total}đ
+                      Tổng thu: {transactions?.charge.total}đ
                     </div>
                   </div>
                 </div>
@@ -341,7 +356,7 @@ export const ModalDetailPrint: React.FC<ModalDetailPrintProps> = (props) => {
                       Print
                     </div>
                   )}
-                  content={() => componentRef.current}
+                  content={() => componentRef!.current}
                 />
               </div>
             </div>

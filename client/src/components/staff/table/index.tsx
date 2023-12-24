@@ -5,6 +5,7 @@ import TableFooter from "./tableFooter";
 import { ModalDetail, ModalDetailPrint } from "../modalDetails";
 import Receipt from "../receipt";
 import Image from "next/image";
+import useReceipt from "@/hooks/useReceipt";
 
 interface Props {
   headers: any[];
@@ -20,6 +21,9 @@ export const TableGathering: React.FC<Props> = ({
   const [page, setPage] = useState(1);
   const [openDetail, setOpenDetail] = useState<number | null>(null);
   const { slice, range } = useTable(data, page, rowsPerPage);
+  const { transactions, locationReceiver, locationSender } = useReceipt(
+    openDetail!
+  );
   const styles = {
     table: "border-collapse w-full table-fixed",
     tableRowHeader: "transition text-left",
@@ -82,7 +86,13 @@ export const TableGathering: React.FC<Props> = ({
         )}
       </div>
       {openDetail && (
-        <ModalDetail openDetail={openDetail} setOpenDetail={setOpenDetail} />
+        <ModalDetail
+          setOpenDetail={setOpenDetail}
+          transactions={transactions}
+          locationSender={locationSender}
+          locationReceiver={locationReceiver}
+          componentRef={undefined}
+        />
       )}
     </>
   );
@@ -96,6 +106,10 @@ export const TableTransaction: React.FC<Props> = ({
   const [openDetail, setOpenDetail] = useState<number | null>(null);
   const componentRef = useRef<HTMLDivElement>(null);
   const { slice, range } = useTable(data, page, rowsPerPage);
+  const { transactions, locationReceiver, locationSender } = useReceipt(
+    openDetail!
+  );
+
   const styles = {
     table: "border-collapse w-full table-fixed",
     tableRowHeader: "transition text-left",
@@ -159,13 +173,20 @@ export const TableTransaction: React.FC<Props> = ({
       </div>
       {openDetail && (
         <ModalDetailPrint
-          openDetail={openDetail}
           setOpenDetail={setOpenDetail}
           componentRef={componentRef}
+          transactions={transactions}
+          locationSender={locationSender}
+          locationReceiver={locationReceiver}
         />
       )}
       <div className="hidden">
-        <Receipt innerRef={componentRef} id={openDetail} />
+        <Receipt
+          innerRef={componentRef}
+          transactions={transactions}
+          locationSender={locationSender}
+          locationReceiver={locationReceiver}
+        />
       </div>
     </>
   );
