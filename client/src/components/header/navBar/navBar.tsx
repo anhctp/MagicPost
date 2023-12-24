@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import SearchBar from "../searchBar";
 import { usePathname } from "next/navigation";
 import Sign_Button from "../signButton";
 import { useState } from "react";
 import SideBar from "./sideBar";
-import { useEffect, useCallback, useRef } from "react";
 import { useUserStore } from "@/stores/userStore";
-import { headerStaffGatheringItem } from "@/services/header/headerHelper";
+import {
+  headerStaffGatheringItem,
+  headerStaffTransactionItem,
+} from "@/services/header/headerHelper";
 import { Role } from "@/services/user/userHelper";
 
 export default function NavBar() {
@@ -24,7 +25,7 @@ export default function NavBar() {
       <Link href={"/"} className="h-20 w-fit justify-start items-center">
         <img src="/favicon.ico" className="h-20" />
       </Link>
-      {userRole === Role.STAFFGATHERING ? (
+      {userRole === Role.STAFFGATHERING && (
         <div className="w-fit justify-center items-center inline-flex gap-10 text-center text-stone-600 text-xl">
           {headerStaffGatheringItem.map((item, index) => (
             <Link
@@ -36,7 +37,21 @@ export default function NavBar() {
             </Link>
           ))}
         </div>
-      ) : (
+      )}
+      {userRole === Role.STAFFTRANSACTION && (
+        <div className="w-fit justify-center items-center inline-flex gap-10 text-center text-stone-600 text-xl">
+          {headerStaffTransactionItem.map((item, index) => (
+            <Link
+              key={index}
+              className={`link ${pathname.includes(item.id) ? active : ""}`}
+              href={item.link}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
+      {!userRole && (
         <nav className="w-fit">
           <ul className="w-fit justify-center items-center inline-flex gap-10 text-center text-stone-600 text-xl">
             <li>

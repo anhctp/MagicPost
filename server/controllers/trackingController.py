@@ -14,6 +14,9 @@ class TrackingController:
             date=tracking.date,
             user_send=tracking.user_send,
             user_receive=tracking.user_receive,
+            send_location_id= tracking.send_location_id,
+            receive_location_id= tracking.receive_location_id,
+            send_type= tracking.send_type
         )
         db.add(db_tracking)
         db.commit()

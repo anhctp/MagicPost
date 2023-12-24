@@ -131,6 +131,7 @@ class LocationController:
                     )
                     db.add(db_division)
                     db.flush()
+                    count_district_id = 0
                     for district in division["districts"]:
                         db_district = DistrictModel(
                             division_id=db_division.id,
@@ -159,11 +160,13 @@ class LocationController:
                             )
                             db.add(db_warehouse)
                             db.flush()
-                            if db_ward.type == "thị trấn":
+                            # if db_ward.type == "thị trấn":
+                            if db_district.id != count_district_id: 
                                 db_warehouseg = WarehouseModel(
                                     location_id=db_location.id,
                                     type=TypeWarehouse.GATHERING
                                 )
+                                count_district_id += 1
                                 db.add(db_warehouseg)
                                 db.flush()
             return {"detail": "successful!"}
