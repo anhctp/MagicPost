@@ -21,7 +21,7 @@ export default function NavBar() {
   const { userRole } = useUserStore();
 
   return (
-    <div className="w-full h-fit justify-between items-center py-3 top-0 z-50 bg-white inline-flex">
+    <div className="w-full h-fit justify-between items-center top-0 z-50 bg-white inline-flex">
       <Link href={"/"} className="h-20 w-fit justify-start items-center">
         <img src="/favicon.ico" className="h-20" />
       </Link>
@@ -67,24 +67,22 @@ export default function NavBar() {
               onMouseLeave={() => setIsOpen(false)}
             >
               <Link
-                className={`link ${
-                  pathname.includes("/home/info") ? active : ""
-                }`}
+                className={`link ${pathname.includes("/home/info") ? active : ""
+                  }`}
                 href="/home/info/rules"
               >
                 Thông tin
               </Link>
               {isOpen && (
-                <div className="absolute">
+                <div className="visible absolute z-30 flex">
                   <SideBar />
                 </div>
               )}
             </li>
             <li>
               <Link
-                className={`link ${
-                  pathname === "/home/services" ? active : ""
-                }`}
+                className={`link ${pathname === "/home/services" ? active : ""
+                  }`}
                 href="/home/services"
               >
                 Dịch vụ
