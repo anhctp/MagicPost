@@ -9,9 +9,13 @@ import useReceipt from "@/hooks/useReceipt";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import {
   createBackwardSending,
+  createBackwardSendingGather,
   createForwardSending,
+  createGatheringSending,
+  updateStatusGathering,
 } from "@/services/staff/staffApi";
 import { Transfer } from "@/services/staff/transactionPointHelpers";
+import { TransferGathering } from "@/services/staff/gatheringPointHelpers";
 
 interface Props {
   headers: any[];
@@ -21,8 +25,23 @@ interface Props {
 interface PropsTransaction extends Props {
   receiveFrom: string;
 }
+interface GatheringProps extends Props {
+  receive: boolean;
+  transfer: string;
+}
 
-export const TableGathering: React.FC<Props> = ({
+const styles = {
+  table: "border-collapse w-full table-fixed",
+  tableRowHeader: "transition text-left",
+  tableRowItems: "cursor-auto",
+  tableHeader: "border-b border-stone-600 p-3 text-sm",
+  tableCell: "p-3 text-sm",
+  tableCellDetail: "p-3 text-sm text-stone-600 cursor-pointer",
+};
+
+export const TableGathering: React.FC<GatheringProps> = ({
+  receive,
+  transfer,
   headers,
   data,
   rowsPerPage,
@@ -33,13 +52,16 @@ export const TableGathering: React.FC<Props> = ({
   const { transactions, locationReceiver, locationSender } = useReceipt(
     openDetail!
   );
-  const styles = {
-    table: "border-collapse w-full table-fixed",
-    tableRowHeader: "transition text-left",
-    tableRowItems: "cursor-auto",
-    tableHeader: "border-b border-stone-600 p-3 text-sm",
-    tableCell: "p-3 text-sm",
-    tableCellDetail: "p-3 text-sm text-stone-600 cursor-pointer",
+  const handleClickedButton = async (id: number, status: string) => {
+    if (status === "sending") {
+      await updateStatusGathering(id);
+    } else {
+      if (transfer === TransferGathering.GATHERING) {
+        await createBackwardSendingGather(id);
+      } else {
+        await createGatheringSending(id);
+      }
+    }
   };
   return (
     <>
@@ -71,6 +93,23 @@ export const TableGathering: React.FC<Props> = ({
                     >
                       Chi tiết
                     </td>
+                    {receive && (
+                      <td className={styles.tableCell}>
+                        <div
+                          className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2"
+                          onClick={() =>
+                            handleClickedButton(item.id, item.status)
+                          }
+                        >
+                          <PaperAirplaneIcon width={20} height={20} />
+                          {item.status === "sending"
+                            ? "Đã nhận hàng"
+                            : transfer === TransferGathering.GATHERING
+                            ? "Gửi tới điểm giao dịch"
+                            : "Gửi tới điểm tập kết"}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -106,6 +145,7 @@ export const TableGathering: React.FC<Props> = ({
     </>
   );
 };
+
 export const TableTransaction: React.FC<PropsTransaction> = ({
   receiveFrom,
   headers,
@@ -125,14 +165,6 @@ export const TableTransaction: React.FC<PropsTransaction> = ({
     else await createBackwardSending(id);
   };
 
-  const styles = {
-    table: "border-collapse w-full table-fixed",
-    tableRowHeader: "transition text-left",
-    tableRowItems: "cursor-auto",
-    tableHeader: "border-b border-stone-600 p-3 text-sm",
-    tableCell: "p-3 text-sm",
-    tableCellDetail: "p-3 text-sm text-stone-600 cursor-pointer",
-  };
   return (
     <>
       <div className="flex flex-col gap-4">

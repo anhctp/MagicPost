@@ -12,15 +12,15 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.put("/confirm/{transaction_id}")
+@router.get("/confirm/{transaction_id}")
 def confirm(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return GatheringController.confirm(transaction_id=transaction_id, status=TransactionStatus.RECEIVED, db=db, current_user=current_user)
 
-@router.put("/create_gg_sending/{transaction_id}")
+@router.get("/create_gg_sending/{transaction_id}")
 def create_gg_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return GatheringController.create_gg_sending(transaction_id=transaction_id, db=db, current_user=current_user)
 
-@router.put("/create_backward_sending/{transaction_id}")
+@router.get("/create_backward_sending/{transaction_id}")
 def create_backward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return GatheringController.create_backward_sending(transaction_id=transaction_id, db=db, current_user=current_user)
 

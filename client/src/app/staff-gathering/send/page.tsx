@@ -1,6 +1,6 @@
 "use client";
 import { TableGathering } from "@/components/staff/table";
-import { ReceiveFrom } from "@/services/staff/gatheringPointHelpers";
+import { TransferGathering } from "@/services/staff/gatheringPointHelpers";
 import { useState } from "react";
 
 export default function StaffGathering() {
@@ -56,7 +56,9 @@ export default function StaffGathering() {
     "Chi tiết",
   ];
 
-  const [receiveFrom, setReceiveFrom] = useState<string>(ReceiveFrom.GATHERING);
+  const [receiveFrom, setReceiveFrom] = useState<string>(
+    TransferGathering.GATHERING
+  );
   return (
     <>
       <div className="flex justify-start items-center">
@@ -66,13 +68,21 @@ export default function StaffGathering() {
             setReceiveFrom(e.target.value);
           }}
         >
-          <option value={ReceiveFrom.GATHERING}>{ReceiveFrom.GATHERING}</option>
-          <option value={ReceiveFrom.TRANSACTION}>
-            {ReceiveFrom.TRANSACTION}
+          <option value={TransferGathering.GATHERING}>
+            {TransferGathering.GATHERING}
+          </option>
+          <option value={TransferGathering.TRANSACTION}>
+            {TransferGathering.TRANSACTION}
           </option>
         </select>
       </div>
-      <TableGathering headers={headers} data={data} rowsPerPage={5} />
+      <TableGathering
+        receive={false}
+        transfer={receiveFrom}
+        headers={headers}
+        data={data}
+        rowsPerPage={5}
+      />
     </>
   );
 }

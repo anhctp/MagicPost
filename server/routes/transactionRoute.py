@@ -25,7 +25,7 @@ def get_transaction_by_id(transaction_id: int, db: Session = Depends(getDatabase
 def create_forward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return TransactionController.create_forward_sending(transaction_id=transaction_id, db=db, current_user=current_user)
 
-@router.put("/confirm/{transaction_id}")
+@router.get("/confirm/{transaction_id}")
 def confirm(transaction_id: int, status: TransactionStatus, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return TransactionController.confirm(transaction_id=transaction_id, status=status, db=db, current_user=current_user)
 

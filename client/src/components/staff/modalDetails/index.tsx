@@ -439,9 +439,15 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
                 Thông tin người gửi
                 <div className="px-10">
                   <div className="text-base">
-                    <span className={styles.key}>Id người gửi: </span>
+                    <span className={styles.key}>Họ và tên: </span>
                     <span className={styles.value}>
-                      {transactions?.sender.customer_id}
+                      {transactions?.sender.fullname}
+                    </span>
+                  </div>
+                  <div className="text-base">
+                    <span className={styles.key}>Số điện thoại: </span>
+                    <span className={styles.value}>
+                      {transactions?.sender.phone}
                     </span>
                   </div>
                   <div className="text-base">
@@ -454,9 +460,15 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
                 Thông tin người nhận
                 <div className="px-10">
                   <div className="text-base">
-                    <span className={styles.key}>Id người nhận: </span>
+                    <span className={styles.key}>Họ và tên: </span>
                     <span className={styles.value}>
-                      {transactions?.sender.customer_id}
+                      {transactions?.receiver.fullname}
+                    </span>
+                  </div>
+                  <div className="text-base">
+                    <span className={styles.key}>Số điện thoại: </span>
+                    <span className={styles.value}>
+                      {transactions?.receiver.phone}
                     </span>
                   </div>
                   <div className="text-base">
@@ -543,13 +555,6 @@ export const ModalDetail: React.FC<ModalDetailProps> = (props) => {
                 onClick={() => setOpenDetail(null)}
               >
                 Close
-              </button>
-              <button
-                className="bg-neutral-400 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                type="button"
-                onClick={() => setOpenDetail(null)}
-              >
-                Save Changes
               </button>
             </div>
           </div>
@@ -642,13 +647,13 @@ export const ModalDetailPrint: React.FC<ModalDetailProps> = (props) => {
                   <div className="text-base">
                     <span className={styles.key}>Họ và tên: </span>
                     <span className={styles.value}>
-                      {transactions?.sender.fullname}
+                      {transactions?.receiver.fullname}
                     </span>
                   </div>
                   <div className="text-base">
                     <span className={styles.key}>Số điện thoại: </span>
                     <span className={styles.value}>
-                      {transactions?.sender.phone}
+                      {transactions?.receiver.phone}
                     </span>
                   </div>
                   <div className="text-base">
