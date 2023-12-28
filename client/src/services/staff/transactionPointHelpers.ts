@@ -9,6 +9,7 @@ export const headers = [
   "Loại đơn hàng",
   "Tình trạng",
   "Chi tiết",
+  "",
 ];
 
 export enum ItemType {

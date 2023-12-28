@@ -157,6 +157,8 @@ class TransactionController:
             .first()
         )
         transaction.status = TransactionStatus.SENDING
+        db.commit()
+
         warehouse = (
             db.query(WarehouseModel)
             .filter(WarehouseModel.id == current_user.warehouses_id)
@@ -250,6 +252,7 @@ class TransactionController:
             "id": transaction.id,
             "user": user,
             "code": transaction.code,
+            "status": transaction.status,
             "sender": sender,
             "receiver": receiver,
             "detail": transaction_detail,

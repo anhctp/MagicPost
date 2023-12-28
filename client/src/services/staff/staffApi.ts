@@ -47,3 +47,18 @@ export const getAllDistrictByDivisionID = (divisionID: number) => {
 export const getAllWardByDistrictID = (districtID: number) => {
   return axios.get(`/ward/${districtID}`);
 };
+
+export const createForwardSending = (transactionId: number) => {
+  return axios.get(`/transaction/create_forward_sending/${transactionId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const createBackwardSending = (transactionId: number) => {
+  return axios.get(`/transaction/create_backward_sending/${transactionId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
