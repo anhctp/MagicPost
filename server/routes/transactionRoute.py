@@ -21,7 +21,7 @@ def create_full_transaction(transaction: CreateTransaction, detail: CreateTransa
 def get_transaction_by_id(transaction_id: int, db: Session = Depends(getDatabase)):
     return TransactionController.getTransactionById(transaction_id=transaction_id, db=db)
 
-@router.post("/create_forward_sending/{transaction_id}")
+@router.get("/create_forward_sending/{transaction_id}")
 def create_forward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return TransactionController.create_forward_sending(transaction_id=transaction_id, db=db, current_user=current_user)
 
@@ -29,7 +29,7 @@ def create_forward_sending(transaction_id: int, db: Session = Depends(getDatabas
 def confirm(transaction_id: int, status: TransactionStatus, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return TransactionController.confirm(transaction_id=transaction_id, status=status, db=db, current_user=current_user)
 
-@router.post("/create_backward_sending/{transaction_id}")
+@router.get("/create_backward_sending/{transaction_id}")
 def create_backward_sending(transaction_id: int, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
     return TransactionController.create_backward_sending(transaction_id=transaction_id, db=db, current_user=current_user)
 

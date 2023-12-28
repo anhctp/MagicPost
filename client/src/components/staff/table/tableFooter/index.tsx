@@ -34,7 +34,9 @@ const TableFooter: React.FC<Props> = ({ range, setPage, page, slice }) => {
       {range.map((item, index) => (
         <div
           key={index}
-          className={`${styles.button} ${page === item && styles.active}`}
+          className={`${styles.button} ${
+            page === item && styles.active
+          } cursor-pointer`}
           onClick={() => setPage(item)}
         >
           {item}

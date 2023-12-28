@@ -6,11 +6,20 @@ import { ModalDetail, ModalDetailPrint } from "../modalDetails";
 import Receipt from "../receipt";
 import Image from "next/image";
 import useReceipt from "@/hooks/useReceipt";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import {
+  createBackwardSending,
+  createForwardSending,
+} from "@/services/staff/staffApi";
+import { Transfer } from "@/services/staff/transactionPointHelpers";
 
 interface Props {
   headers: any[];
   data: any;
   rowsPerPage: number;
+}
+interface PropsTransaction extends Props {
+  receiveFrom: string;
 }
 
 export const TableGathering: React.FC<Props> = ({
@@ -97,7 +106,8 @@ export const TableGathering: React.FC<Props> = ({
     </>
   );
 };
-export const TableTransaction: React.FC<Props> = ({
+export const TableTransaction: React.FC<PropsTransaction> = ({
+  receiveFrom,
   headers,
   data,
   rowsPerPage,
@@ -109,6 +119,11 @@ export const TableTransaction: React.FC<Props> = ({
   const { transactions, locationReceiver, locationSender } = useReceipt(
     openDetail!
   );
+
+  const handleSend = async (id: number) => {
+    if (receiveFrom === Transfer.CUSTOMER) await createForwardSending(id);
+    else await createBackwardSending(id);
+  };
 
   const styles = {
     table: "border-collapse w-full table-fixed",
@@ -146,7 +161,20 @@ export const TableTransaction: React.FC<Props> = ({
                       className={styles.tableCellDetail}
                       onClick={() => setOpenDetail(item.id)}
                     >
-                      Chi tiết và in
+                      {receiveFrom === Transfer.CUSTOMER
+                        ? "Chi tiết và in"
+                        : "Chi tiết"}
+                    </td>
+                    <td
+                      className={styles.tableCell}
+                      onClick={() => handleSend(item.id)}
+                    >
+                      <div className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2">
+                        <PaperAirplaneIcon width={20} height={20} />
+                        {receiveFrom === Transfer.CUSTOMER
+                          ? "Gửi đến điểm tập kết"
+                          : "Giao cho khách hàng"}
+                      </div>
                     </td>
                   </tr>
                 ))}
