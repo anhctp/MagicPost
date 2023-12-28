@@ -7,9 +7,9 @@ import {
 import { useEffect, useState } from "react";
 
 const useLocation = () => {
-  const [divisions, setDivisions] = useState<any>();
-  const [districts, setDistricts] = useState<any>();
-  const [wards, setWards] = useState<any>();
+  const [divisions, setDivisions] = useState<any[]>();
+  const [districts, setDistricts] = useState<any[]>();
+  const [wards, setWards] = useState<any[]>();
   const [divisionId, setDivisionId] = useState<number>(1);
   const [districtId, setDistrictId] = useState<number>(1);
   const [wardId, setWardId] = useState<number>(1);
