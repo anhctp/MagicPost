@@ -106,7 +106,7 @@ class TransactionController:
             transaction_id=transaction_id, tracking=tracking, db=db
         )
 
-        return db_transaction
+        return transaction_id
 
     def cal_total_cost(
         send_location_id,
