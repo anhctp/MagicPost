@@ -6,7 +6,7 @@ export default function infoLayout({children}: {
     return (
         <section className="flex w-full h-full">
             <section className="w-1/6"><SideBar/></section>
-            <section className="w-5/6 px-5 h-[80vh] overflow-auto">{children}</section>
+            <section className="w-5/6 px-5 h-[82.5vh] overflow-auto">{children}</section>
         </section>
     )
 }
