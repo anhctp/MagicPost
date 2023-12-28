@@ -9,6 +9,9 @@ import { useUserStore } from "@/stores/userStore";
 import {
   headerStaffGatheringItem,
   headerStaffTransactionItem,
+  headerCEOItem,
+  headerLeaderGatheringItem,
+  headerLeaderTransactionItem,
 } from "@/services/header/headerHelper";
 import { Role } from "@/services/user/userHelper";
 
@@ -41,6 +44,45 @@ export default function NavBar() {
       {userRole === Role.STAFFTRANSACTION && (
         <div className="w-fit justify-center items-center inline-flex gap-10 text-center text-stone-600 text-xl">
           {headerStaffTransactionItem.map((item, index) => (
+            <Link
+              key={index}
+              className={`link ${pathname.includes(item.id) ? active : ""}`}
+              href={item.link}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
+      {userRole === Role.CEO && (
+        <div className="w-fit justify-center items-center inline-flex gap-10 text-center text-stone-600 text-xl">
+          {headerCEOItem.map((item, index) => (
+            <Link
+              key={index}
+              className={`link ${pathname.includes(item.id) ? active : ""}`}
+              href={item.link}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
+      {userRole === Role.LEADERGATHERING && (
+        <div className="w-fit justify-center items-center inline-flex gap-10 text-center text-stone-600 text-xl">
+          {headerLeaderGatheringItem.map((item, index) => (
+            <Link
+              key={index}
+              className={`link ${pathname.includes(item.id) ? active : ""}`}
+              href={item.link}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
+      {userRole === Role.LEADERTRANSACTION && (
+        <div className="w-fit justify-center items-center inline-flex gap-10 text-center text-stone-600 text-xl">
+          {headerLeaderTransactionItem.map((item, index) => (
             <Link
               key={index}
               className={`link ${pathname.includes(item.id) ? active : ""}`}
