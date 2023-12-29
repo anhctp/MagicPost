@@ -1,12 +1,14 @@
 "use client";
 import axios from "axios";
 import { FullTransaction } from "./transactionPointHelpers";
+import { TransactionStatus } from "./transactionPointHelpers";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://localhost:8000/api";
 
 const token =
   typeof window !== "undefined" ? localStorage.getItem("token") : "";
 
+// Transaction
 export const getTransactionById = (idTransaction: number) => {
   return axios.get(`/transaction/get_transaction/${idTransaction}`);
 };
@@ -57,6 +59,48 @@ export const createForwardSending = (transactionId: number) => {
 };
 export const createBackwardSending = (transactionId: number) => {
   return axios.get(`/transaction/create_backward_sending/${transactionId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const updateStatusTransaction = (
+  transactionId: number,
+  status: string
+) => {
+  return axios.get(`/transaction/confirm/${transactionId}?status=${status}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// Gathering
+
+export const getGatheringStatistic = () => {
+  return axios.get("/gathering/gathering_statistic", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const createGatheringSending = (transactionId: number) => {
+  return axios.get(`/gathering/create_gg_sending/${transactionId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const createBackwardSendingGather = (transactionId: number) => {
+  return axios.get(`/gathering/create_backward_sending/${transactionId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const updateStatusGathering = (transactionId: number) => {
+  return axios.get(`/gathering/confirm/${transactionId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
