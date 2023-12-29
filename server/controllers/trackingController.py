@@ -29,7 +29,6 @@ class TrackingController:
         transaction = db.query(TransactionModel).filter(TransactionModel.code == transaction_code).first()
         trackings = db.query(TrackingModel).filter(TrackingModel.transaction_id == transaction.id).all()
         messages = []
-        
         if trackings is not None:
             for i, tracking in enumerate(trackings):
                 ward = db.query(WardModel).filter(WardModel.id == tracking.receive_location_id).first()
@@ -38,22 +37,25 @@ class TrackingController:
                 if i==1:
                     msg = "Đang được chuyển đến điểm tập kết " + ward.name
                 if i==2:
-                    msg = "Đã tới điểm tập kết" 
-                    messages.append(msg)
                     msg = "Đang được chuyển đến điểm tập kết " + ward.name
                 if i==3:
-                    msg = "Đã tới điểm tập kết" 
-                    messages.append(msg)
                     msg = "Đang được chuyển đến điểm giao dịch " + ward.name
                 if i==4:
-                    msg = "Đã tới điểm giao dịch"
-                    messages.append(msg)
+                    messages.append(message)    
                     msg = "Nhân viên giao hàng đang tiến hành giao tới " + ward.name
-                messages.append(msg)
+                message = {
+                    "message": msg,
+                    "time": tracking.date
+                }
+                messages.append(message)
         
         if(transaction.status == TransactionStatus.SHIPPED):
             msg = "Đơn hàng đã giao thành công"
-            messages.append(msg)
+            message = {
+                "message": msg,
+                "time": tracking.date
+            }
+            messages.append(message)
         return messages
 
     
