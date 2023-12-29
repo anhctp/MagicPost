@@ -67,7 +67,7 @@ export const createBackwardSending = (transactionId: number) => {
 
 export const updateStatusTransaction = (
   transactionId: number,
-  status: TransactionStatus
+  status: string
 ) => {
   return axios.get(`/transaction/confirm/${transactionId}?status=${status}`, {
     headers: {

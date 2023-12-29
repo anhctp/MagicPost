@@ -13,25 +13,24 @@ import {
   createForwardSending,
   createGatheringSending,
   updateStatusGathering,
+  updateStatusTransaction,
 } from "@/services/staff/staffApi";
-import { Transfer } from "@/services/staff/transactionPointHelpers";
+import {
+  TransactionStatus,
+  Transfer,
+} from "@/services/staff/transactionPointHelpers";
 import { TransferGathering } from "@/services/staff/gatheringPointHelpers";
 
 interface Props {
   headers: any[];
   data: any;
   rowsPerPage: number;
-}
-interface PropsTransaction extends Props {
-  receiveFrom: string;
-}
-interface GatheringProps extends Props {
   receive: boolean;
   transfer: string;
 }
 
 const styles = {
-  table: "border-collapse w-full table-fixed",
+  table: "border-collapse w-full table-auto",
   tableRowHeader: "transition text-left",
   tableRowItems: "cursor-auto",
   tableHeader: "border-b border-stone-600 p-3 text-sm",
@@ -39,7 +38,7 @@ const styles = {
   tableCellDetail: "p-3 text-sm text-stone-600 cursor-pointer",
 };
 
-export const TableGathering: React.FC<GatheringProps> = ({
+export const TableGathering: React.FC<Props> = ({
   receive,
   transfer,
   headers,
@@ -146,23 +145,34 @@ export const TableGathering: React.FC<GatheringProps> = ({
   );
 };
 
-export const TableTransaction: React.FC<PropsTransaction> = ({
-  receiveFrom,
+export const TableTransaction: React.FC<Props> = ({
+  receive,
+  transfer,
   headers,
   data,
   rowsPerPage,
 }) => {
   const [page, setPage] = useState(1);
   const [openDetail, setOpenDetail] = useState<number | null>(null);
+  const [updateStatus, setUpdateStatus] = useState<string>(
+    TransactionStatus.RECEIVED
+  );
   const componentRef = useRef<HTMLDivElement>(null);
   const { slice, range } = useTable(data, page, rowsPerPage);
   const { transactions, locationReceiver, locationSender } = useReceipt(
     openDetail!
   );
 
-  const handleSend = async (id: number) => {
-    if (receiveFrom === Transfer.CUSTOMER) await createForwardSending(id);
-    else await createBackwardSending(id);
+  const handleSend = async (id: number, currStatus: string) => {
+    if (currStatus === "sending") {
+      await updateStatusTransaction(id, updateStatus);
+    } else if (currStatus === "received") {
+      if (transfer === Transfer.CUSTOMER) {
+        await createForwardSending(id);
+      } else {
+        await createBackwardSending(id);
+      }
+    }
   };
 
   return (
@@ -193,21 +203,82 @@ export const TableTransaction: React.FC<PropsTransaction> = ({
                       className={styles.tableCellDetail}
                       onClick={() => setOpenDetail(item.id)}
                     >
-                      {receiveFrom === Transfer.CUSTOMER
+                      {transfer === Transfer.CUSTOMER && receive
                         ? "Chi tiết và in"
                         : "Chi tiết"}
                     </td>
-                    <td
-                      className={styles.tableCell}
-                      onClick={() => handleSend(item.id)}
-                    >
-                      <div className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2">
-                        <PaperAirplaneIcon width={20} height={20} />
-                        {receiveFrom === Transfer.CUSTOMER
-                          ? "Gửi đến điểm tập kết"
-                          : "Giao cho khách hàng"}
-                      </div>
-                    </td>
+                    {receive && (
+                      <td
+                        className={styles.tableCell}
+                        onClick={() => handleSend(item.id, item.status)}
+                      >
+                        {transfer === Transfer.CUSTOMER &&
+                          (item.status === "sending" ? (
+                            <div
+                              className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2"
+                              onClick={() =>
+                                setUpdateStatus(TransactionStatus.RECEIVED)
+                              }
+                            >
+                              <PaperAirplaneIcon width={20} height={20} />
+                              Đã nhận được hàng
+                            </div>
+                          ) : (
+                            <div className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2">
+                              <PaperAirplaneIcon width={20} height={20} />
+                              Gửi đến điểm tập kết
+                            </div>
+                          ))}
+                        {transfer === Transfer.GATHERING &&
+                          (item.status === "sending" ? (
+                            <div
+                              className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2"
+                              onClick={() =>
+                                setUpdateStatus(TransactionStatus.RECEIVED)
+                              }
+                            >
+                              <PaperAirplaneIcon width={20} height={20} />
+                              Đã nhận được hàng
+                            </div>
+                          ) : (
+                            item.status === "received" && (
+                              <div className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2">
+                                <PaperAirplaneIcon width={20} height={20} />
+                                Giao cho khách hàng
+                              </div>
+                            )
+                          ))}
+                      </td>
+                    )}
+                    {!receive && (
+                      <td
+                        className={styles.tableCell}
+                        onClick={() => handleSend(item.id, item.status)}
+                      >
+                        {transfer === Transfer.CUSTOMER && (
+                          <div className="flex items-center">
+                            <div
+                              className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2"
+                              onClick={() =>
+                                setUpdateStatus(TransactionStatus.SHIPPED)
+                              }
+                            >
+                              <PaperAirplaneIcon width={20} height={20} />
+                              Giao hàng thàng công
+                            </div>
+                            <div
+                              className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2"
+                              onClick={() =>
+                                setUpdateStatus(TransactionStatus.RETURN)
+                              }
+                            >
+                              <PaperAirplaneIcon width={20} height={20} />
+                              Giao hàng thất bại
+                            </div>
+                          </div>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
