@@ -11,5 +11,5 @@ router = APIRouter(
 )
 
 @router.get("/get_transaction/{transaction_id}")
-def get_tracking_by_transaction_id(transaction_id: int, db: Session = Depends(getDatabase)):
-    return TrackingController.getTrackingByTransactionId(transaction_id=transaction_id, db=db)
+def get_tracking_by_transaction_id(transaction_code: str, db: Session = Depends(getDatabase)):
+    return TrackingController.getTrackingByTransactionId(transaction_code=transaction_code, db=db)
