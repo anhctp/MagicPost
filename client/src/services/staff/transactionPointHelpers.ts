@@ -11,6 +11,14 @@ export const headers = [
   "Chi tiết",
   "",
 ];
+export const headersShort = [
+  "STT",
+  "Mã đơn hàng",
+  "Loại đơn hàng",
+  "Tình trạng",
+  "Chi tiết",
+];
+export const colorsChart = ["#FA8072", "#91C788"];
 
 export enum ItemType {
   DOCUMENTS = "documents",
@@ -22,6 +30,12 @@ export enum ItemReturn {
   RETURN_EXPIRATION = "return expiration",
   CALL_SENDER = "call sender",
   CANCEL = "cancel",
+}
+export enum TransactionStatus {
+  RECEIVED = "received",
+  SENDING = "sending",
+  SHIPPED = "shipped",
+  RETURN = "return",
 }
 
 export interface CustomerInfo {

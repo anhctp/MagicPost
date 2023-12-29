@@ -26,12 +26,11 @@ def createAccessToken(data: dict):
         days=int(os.getenv("ACCESS_TOKEN_EXPIRE_DAYS"))
     )
     to_encode.update({"exp": expire})
-    to_encode.update({ "alg": "HS256"})
+    to_encode.update({"alg": "HS256"})
     encoded_jwt = jwt.encode(
         to_encode, os.getenv("SECRET_KEY"), algorithm=os.getenv("ALGORITHM")
     )
     return encoded_jwt
-
 
 
 def verifyToken(db: Session = Depends(getDatabase), data=Depends(reusable_oauth2)):
@@ -82,32 +81,52 @@ class UserController:
 
     def getUserById(userId: int, db: Session = Depends(getDatabase)):
         return db.query(UserModel).filter(UserModel.id == userId).first()
-    
+
     def getUserByEmail(email: str, db: Session = Depends(getDatabase)):
         return db.query(UserModel).filter(UserModel.email == email).first()
-    
-    def findUserByRole(role: UserRole, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+
+    def findUserByRole(
+        role: UserRole,
+        db: Session = Depends(getDatabase),
+        current_user: UserModel = Depends(verifyToken),
+    ):
         if role == UserRole.CEO:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot access to CEO role"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot access to CEO role",
             )
-        if (role == UserRole.LEADERGATHERING or role == UserRole.LEADERTRANSACTION) and current_user.role != UserRole.CEO:
+        if (
+            role == UserRole.LEADERGATHERING or role == UserRole.LEADERTRANSACTION
+        ) and current_user.role != UserRole.CEO:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Only the CEO is granted access!"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Only the CEO is granted access!",
             )
-        user = db.query(UserModel).filter(UserModel.role == role).first()
-        if not user:
+        users = db.query(UserModel).filter(UserModel.role == role).all()
+        if not users:
             return {}
-        location = WarehouseController.getWarehouseById(user.warehouses_id)
-        return {
-            "user": user,
-            "location": location
-        }
-    
+
+        result = []
+        for user in users:
+            location = WarehouseController.getWarehouseById(
+                warehouse_id=user.warehouses_id, db=db
+            )
+            result.append({"user": user, "location": location})
+        return result
 
     def createUser(user: RegisterUser, db: Session = Depends(getDatabase)):
-        if user.role == UserRole.LEADERGATHERING or user.role == UserRole.LEADERTRANSACTION:
-            checkDupplicate = db.query(UserModel).filter(UserModel.role == user.role, UserModel.warehouses_id == user.warehouses_id).first()
+        if (
+            user.role == UserRole.LEADERGATHERING
+            or user.role == UserRole.LEADERTRANSACTION
+        ):
+            checkDupplicate = (
+                db.query(UserModel)
+                .filter(
+                    UserModel.role == user.role,
+                    UserModel.warehouses_id == user.warehouses_id,
+                )
+                .first()
+            )
             if checkDupplicate:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST, detail=f"Leader existed!"
@@ -139,9 +158,14 @@ class UserController:
     ):
         if not request.email and not request.phone:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=f"Either email or phone must be provided"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Either email or phone must be provided",
             )
-        user = db.query(UserModel).filter(UserModel.email == request.email).first() if request.email else db.query(UserModel).filter(UserModel.phone == request.phone).first()
+        user = (
+            db.query(UserModel).filter(UserModel.email == request.email).first()
+            if request.email
+            else db.query(UserModel).filter(UserModel.phone == request.phone).first()
+        )
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Credentials"
@@ -159,19 +183,32 @@ class UserController:
         }
         return response
 
-    def deleteUser(userId: int, db: Session, current_user: UserModel = Depends(verifyToken)):
+    def deleteUser(
+        userId: int, db: Session, current_user: UserModel = Depends(verifyToken)
+    ):
         dbUserId = db.query(UserModel).filter(UserModel.id == userId).first()
         if not dbUserId:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Credentials"
             )
-        if (dbUserId.role == UserRole.LEADERGATHERING or dbUserId.role == UserRole.LEADERTRANSACTION) and current_user.role != UserRole.CEO:
+        if (
+            dbUserId.role == UserRole.LEADERGATHERING
+            or dbUserId.role == UserRole.LEADERTRANSACTION
+        ) and current_user.role != UserRole.CEO:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Only CEO can delete leader!"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Only CEO can delete leader!",
             )
-        if (dbUserId.role == UserRole.STAFFGATHERING or dbUserId.role == UserRole.STAFFTRANSACTION) and (current_user.role == UserRole.STAFFTRANSACTION or current_user.role == UserRole.STAFFGATHERING):
+        if (
+            dbUserId.role == UserRole.STAFFGATHERING
+            or dbUserId.role == UserRole.STAFFTRANSACTION
+        ) and (
+            current_user.role == UserRole.STAFFTRANSACTION
+            or current_user.role == UserRole.STAFFGATHERING
+        ):
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Only CEO, leader can delete staff!"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Only CEO, leader can delete staff!",
             )
         db.delete(dbUserId)
         db.commit()

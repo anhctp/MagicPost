@@ -24,7 +24,7 @@ export default function NavBar() {
   const { userRole } = useUserStore();
 
   return (
-    <div className="w-full h-fit justify-between items-center top-0 z-50 bg-white inline-flex">
+    <div className="w-full h-fit justify-between items-center top-0 z-50 bg-white inline-flex p-2">
       <Link href={"/"} className="h-20 w-fit justify-start items-center">
         <img src="/favicon.ico" className="h-20" />
       </Link>

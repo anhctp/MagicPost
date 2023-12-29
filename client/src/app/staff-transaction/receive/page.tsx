@@ -37,8 +37,9 @@ export default function StaffTransaction() {
         )}
       </div>
       <TableTransaction
+        transfer={receiveFrom}
+        receive={true}
         headers={headers}
-        receiveFrom={receiveFrom}
         data={
           receiveFrom === Transfer.CUSTOMER
             ? receiveFromCustomer
