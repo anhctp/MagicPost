@@ -7,6 +7,8 @@ import AccountModal from "./accountModal";
 import useAccount from "@/hooks/useAccount";
 import useWarehouses from "@/hooks/useSystem";
 import SystemModal from "./systemModal";
+import { ModalDetail } from "../staff/modalDetails";
+import useReceipt from "@/hooks/useReceipt";
 
 const styles = {
   table: "border-collapse w-full table-fixed",
@@ -169,6 +171,88 @@ export const TableSystem = ({
           setOpenDetail={setOpenDetail}
           componentRef={componentRef}
           systemPoint={warehouse}
+        />
+      )}
+    </div>
+  );
+};
+export const TableTransaction = ({
+  title,
+  headers,
+  data,
+  rowsPerPage,
+}: {
+  title: string;
+  headers: any[];
+  data: any;
+  rowsPerPage: number;
+}) => {
+  const [openDetail, setOpenDetail] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const { slice, range } = useTable(data, page, rowsPerPage);
+  const { transactions, locationReceiver, locationSender } = useReceipt(
+    openDetail!
+  );
+  return (
+    <div>
+      <div className="flex flex-col gap-4">
+        {slice.length ? (
+          <>
+            <table className={styles.table}>
+              <thead className={styles.tableRowHeader}>
+                <tr>
+                  {headers.map((item, index) => (
+                    <th key={index} className={styles.tableHeader}>
+                      {item}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {slice.map((item, index) => (
+                  <tr className={styles.tableRowItems} key={item.id}>
+                    <td className={styles.tableCell}>{index + 1}</td>
+                    <td className={styles.tableCell}>{item.code}</td>
+                    <td className={styles.tableCell}>{item.status}</td>
+                    <td className={styles.tableCell}>
+                      {item.transaction_receive_date}
+                    </td>
+                    <td
+                      className={styles.tableCellDetail}
+                      onClick={() => setOpenDetail(item.id)}
+                    >
+                      Chi tiết
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <TableFooter
+              range={range}
+              slice={slice}
+              setPage={setPage}
+              page={page}
+            />
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-4 p-4 text-neutral-400 text-xl">
+            <Image
+              src={"/deliveryMan.png"}
+              alt="delivery-man"
+              width={500}
+              height={500}
+            />
+            Chưa có đơn hàng nào tại đây!
+          </div>
+        )}
+      </div>
+      {openDetail && (
+        <ModalDetail
+          setOpenDetail={setOpenDetail}
+          transactions={transactions}
+          locationSender={locationSender}
+          locationReceiver={locationReceiver}
+          componentRef={undefined}
         />
       )}
     </div>

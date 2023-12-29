@@ -189,7 +189,7 @@ class TransactionController:
             date=datetime.now(),
             user_send=current_user.id,
             send_location_id=warehouse.location_id,
-            receive_location_id=gather_ward.id,            
+            receive_location_id=gather_ward.id,
             send_type=SendType.FORWARD,
         )
         db_tracking = TrackingController.createTracking(
@@ -501,9 +501,7 @@ class TransactionController:
                     and transaction.status == TransactionStatus.RECEIVED
                 ):
                     receives_from_customers.append(transaction)
-                if (
-                    latest_tracking.send_type == SendType.BACKWARD
-                ):
+                if latest_tracking.send_type == SendType.BACKWARD:
                     receive_from_gatherings.append(transaction)
 
         send_transactions = (
@@ -554,15 +552,20 @@ class TransactionController:
         if current_user.role != UserRole.CEO:
             return {"Not Authorized"}
 
-        warehouse = (
-            db.query(WarehouseModel).filter(WarehouseModel.id == warehouse_id).first()
-        )
-        if warehouse.type == TypeWarehouse.TRANSACTION:
-            return TransactionController.get_type_quantity(
-                db=db, current_user=current_user, warehouse_id=warehouse_id
-            )
+        # warehouse = (
+        #     db.query(WarehouseModel).filter(WarehouseModel.id == warehouse_id).first()
+        # )
+        # if warehouse.type == TypeWarehouse.TRANSACTION:
+        #     return TransactionController.get_type_quantity(
+        #         db=db, current_user=current_user, warehouse_id=warehouse_id
+        #     )
 
-        if warehouse.type == TypeWarehouse.GATHERING:
-            return GatheringController.get_type_quantity(
-                db=db, current_user=current_user, warehouse_id=warehouse_id
-            )
+        # if warehouse.type == TypeWarehouse.GATHERING:
+        #     return GatheringController.get_type_quantity(
+        #         db=db, current_user=current_user, warehouse_id=warehouse_id
+        #     )
+        return (
+            db.query(TransactionModel)
+            .filter(TransactionModel.cur_warehouse_id == warehouse_id)
+            .all()
+        )

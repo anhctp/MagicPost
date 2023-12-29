@@ -7,7 +7,7 @@ const token =
   typeof window !== "undefined" ? localStorage.getItem("token") : "";
 
 export const manageTransaction = (idWarehouse: number) => {
-  return axios.get(`/mangage_transaction/${idWarehouse}`, {
+  return axios.get(`/manage/mangage_transaction/${idWarehouse}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -15,7 +15,7 @@ export const manageTransaction = (idWarehouse: number) => {
 };
 
 export const getAllTransaction = () => {
-  return axios.get("/mangage_all", {
+  return axios.get("/manage/mangage_all", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
