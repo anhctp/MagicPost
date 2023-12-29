@@ -1,20 +1,25 @@
-'use client'
-import {TableAccount} from "@/components/ceo/table";
-import { useAllAccount } from "@/hooks/useAccount";
-export default function AccountGathering() {
-    const {allTransaction} = useAllAccount();
-    const headers = [
-        "STT",
-        "Họ tên",
-        "Ngày sinh",
-        "Điểm quản lý",
-        "Chi tiết",
-        "Xóa"
-    ];
+"use client";
+import { TableAccount } from "@/components/ceo/table";
+import { getUserByRole } from "@/services/ceo/ceoApi";
+import { UserRoleStaff } from "@/services/leader/leaderHelpers";
+import { useEffect, useState } from "react";
+export default function Account() {
+  const headers = ["STT", "Họ tên", "Ngày sinh", "Điểm làm việc", "Chi tiết"];
+  const [user, setUser] = useState<any>([]);
+  const getUser = async () => {
+    await getUserByRole(UserRoleStaff.STAFFGATHERING)
+      .then((value) => {
+        setUser(value.data);
+      })
+      .catch((err) => console.log(err));
+  };
+  useEffect(() => {
+    getUser();
+  }, []);
 
-    return (
-        <>
-        <TableAccount headers={headers} data={allTransaction} rowsPerPage={5}/>
-        </>
-    )
+  return (
+    <>
+      {user && <TableAccount headers={headers} data={user} rowsPerPage={5} />}
+    </>
+  );
 }
