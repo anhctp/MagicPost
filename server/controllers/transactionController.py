@@ -189,10 +189,7 @@ class TransactionController:
             date=datetime.now(),
             user_send=current_user.id,
             send_location_id=warehouse.location_id,
-            # receive_location_id=gather_location.id,
-            receive_location_id=gather_ward.id,
-            # receive_location_id=gather_location.id,
-            receive_location_id=gather_ward.id,
+            receive_location_id=gather_ward.id,            
             send_type=SendType.FORWARD,
         )
         db_tracking = TrackingController.createTracking(
