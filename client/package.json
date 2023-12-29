@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.0.18",
     "axios": "^1.6.2",
     "framer-motion": "^10.16.15",
+    "i": "^0.3.7",
     "next": "14.0.2",
     "react": "^18",
     "react-barcode": "^1.4.6",

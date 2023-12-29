@@ -56,7 +56,6 @@ export const TableAccount = ({
                     <td className={styles.tableCell}>{item.fullname}</td>
                     <td className={styles.tableCell}>{item.date_of_birth}</td>
                     <td className={styles.tableCell}>{item.warehouses_id}</td>
-                    <td className={styles.tableCell}>{item.role}</td>
                     <td
                       className={styles.tableCellDetail}
                       onClick={() => setOpenDetail(item.id)}
@@ -169,7 +168,6 @@ export const TableSystem = ({
       </div>
       {openDetail && (
         <SystemModal
-          show={true}
           setOpenDetail={setOpenDetail}
           componentRef={componentRef}
           systemPoint={location}

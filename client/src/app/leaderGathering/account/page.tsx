@@ -1,20 +1,20 @@
 'use client'
-import {TableAccount} from "@/components/ceo/table";
-import { useAllAccount } from "@/hooks/useAccount";
+import { TableAccount } from "@/components/ceo/table";
+import { allAccount } from "@/hooks/useAccount";
+
 export default function AccountGathering() {
-    const {allTransaction} = useAllAccount();
     const headers = [
         "STT",
         "Họ tên",
         "Ngày sinh",
         "Điểm quản lý",
-        "Chi tiết",
-        "Xóa"
+        "Chi tiết"
     ];
 
+    const data = allAccount();;
     return (
         <>
-        <TableAccount headers={headers} data={allTransaction} rowsPerPage={5}/>
+        <TableAccount headers={headers} data={data} rowsPerPage={5}/>
         </>
     )
 }
