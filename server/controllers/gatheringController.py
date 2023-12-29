@@ -2,11 +2,12 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import getDatabase
 from controllers.userController import verifyToken
+from models.locationModel import LocationModel
 from models.userModel import UserModel, UserRole
 from models.transactionModel import TransactionModel, TransactionStatus
 from schemas.trackingSchema import CreateTracking
 from datetime import datetime
-from models.warehouseModel import WarehouseModel
+from models.warehouseModel import TypeWarehouse, WarehouseModel
 from models.customerModel import CustomerModel
 from models.wardModel import WardModel
 from models.trackingModel import SendType, TrackingModel
@@ -35,18 +36,19 @@ class GatheringController:
             .filter(CustomerModel.id == transaction.receiver_id)
             .first()
         )
-        ward_id = receiver.location_id
-        ward = db.query(WardModel).filter(WardModel.id == ward_id).first()
         gathering_location = (
-            db.query(WardModel)
-            .filter(WardModel.district_id == ward.district_id)
+            db.query(WarehouseModel)
+            .filter(
+                WarehouseModel.location_id == receiver.location_id,
+                WarehouseModel.type == TypeWarehouse.GATHERING,
+            )
             .first()
         )
 
         tracking = CreateTracking(
             date=datetime.now(),
             user_send=current_user.id,
-            send_location_id=warehouse.location_id,
+            send_location_id=warehouse.id,
             receive_location_id=gathering_location.id,
             send_type=SendType.GG,
         )
@@ -286,8 +288,9 @@ class GatheringController:
                 )
                 .first()
             )
-            if tracking and tracking.send_type == SendType.FORWARD:
-                receives_from_transactions.append(transaction)
+            if tracking:
+                if tracking.send_type == SendType.FORWARD:
+                    receives_from_transactions.append(transaction)
 
         send_transactions = (
             db.query(TransactionModel)
