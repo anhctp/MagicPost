@@ -1,4 +1,4 @@
-import ToggleItem from "@/components/home/services/toggleItem"
+import ToggleItem from "./toggleItem"
 
 export default function Delivery() {
     const style = {

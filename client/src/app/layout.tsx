@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Libre_Franklin } from "next/font/google";
 import "../../public/globals.css";
 import AuthWatcher from "@/components/authwatcher";
+import NavBar from "@/components/header/navBar/navBar";
 const libre = Libre_Franklin({ subsets: ['latin']});
 
 export const metadata: Metadata = {
@@ -25,7 +26,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={libre.className}>
         <AuthWatcher />
-        {children}
+        <section className="px-1 h-full flex flex-col">
+        {/* Include shared UI here e.g. a header or sidebar */}
+        <NavBar/>
+        <section className="py-3 w-full h-[85vh] overflow-auto">{children}</section>
+      </section>
       </body>
     </html>
   );

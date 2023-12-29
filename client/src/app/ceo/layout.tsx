@@ -1,14 +1,12 @@
-import NavBar from "@/components/header/navBar/navBar";
+import SideBar from "@/components/header/navBar/sideBar"
 
-export default function CEOLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="px-5">
-      <NavBar />
-      {children}
-    </div>
-  );
+export default function infoLayout({children}: {
+    children: React.ReactNode
+  }) {
+    return (
+        <section className="flex w-full h-full">
+            <section className="w-1/6"><SideBar/></section>
+            <section className="w-5/6 px-5 h-[82.5vh] overflow-auto">{children}</section>
+        </section>
+    )
 }
