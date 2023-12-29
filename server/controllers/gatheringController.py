@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from database import getDatabase
 from controllers.userController import verifyToken
 from models.locationModel import LocationModel
@@ -38,7 +38,11 @@ class GatheringController:
         )
         ward_id = receiver.location_id
         ward = db.query(WardModel).filter(WardModel.id == ward_id).first()
-        gathering_location = db.query(WardModel).filter(WardModel.district_id == ward.district_id).first()
+        gathering_location = (
+            db.query(WardModel)
+            .filter(WardModel.district_id == ward.district_id)
+            .first()
+        )
         # gathering_location = (
         #     db.query(WarehouseModel)
         #     .filter(
@@ -254,44 +258,28 @@ class GatheringController:
 
         receive_transactions = (
             db.query(TransactionModel)
+            .join(
+                WarehouseModel, TransactionModel.cur_warehouse_id == WarehouseModel.id
+            )
             .filter(
-                TransactionModel.cur_warehouse_id == current_user.warehouses_id,
-                TransactionModel.status == TransactionStatus.RECEIVED,
+                WarehouseModel.location_id == warehouse.location_id,
             )
             .all()
         )
         for transaction in receive_transactions:
-            tracking = (
+            tracking_array = (
                 db.query(TrackingModel)
                 .filter(
                     TrackingModel.transaction_id == transaction.id,
                     TrackingModel.receive_location_id == warehouse.location_id,
                 )
-                .first()
+                .all()
             )
-            if tracking.send_type == SendType.GG:
-                receive_from_gatherings.append(transaction)
-            if tracking.send_type == SendType.FORWARD:
-                receives_from_transactions.append(transaction)
-
-        receive_not_confirm = (
-            db.query(TransactionModel)
-            .filter(
-                TransactionModel.status == TransactionStatus.SENDING,
-            )
-            .all()
-        )
-        for transaction in receive_not_confirm:
-            tracking = (
-                db.query(TrackingModel)
-                .filter(
-                    TrackingModel.transaction_id == transaction.id,
-                    TrackingModel.receive_location_id == warehouse.id,
-                )
-                .first()
-            )
-            if tracking:
-                if tracking.send_type == SendType.FORWARD:
+            if tracking_array:
+                latest_tracking = max(tracking_array, key=lambda obj: obj.id)
+                if latest_tracking.send_type == SendType.GG:
+                    receive_from_gatherings.append(transaction)
+                if latest_tracking.send_type == SendType.FORWARD:
                     receives_from_transactions.append(transaction)
 
         send_transactions = (
@@ -303,19 +291,19 @@ class GatheringController:
             .all()
         )
         for transaction in send_transactions:
-            print(transaction)
-            tracking = (
+            tracking_array = (
                 db.query(TrackingModel)
                 .filter(
                     TrackingModel.transaction_id == transaction.id,
                     TrackingModel.send_location_id == warehouse.location_id,
                 )
-                .first()
+                .all()
             )
-            if tracking is not None:
-                if tracking.send_type == SendType.GG:
+            latest_tracking = max(tracking_array, key=lambda obj: obj.id)
+            if latest_tracking is not None:
+                if latest_tracking.send_type == SendType.GG:
                     send_to_gatherings.append(transaction)
-                if tracking.send_type == SendType.BACKWARD:
+                if latest_tracking.send_type == SendType.BACKWARD:
                     send_to_transactions.append(transaction)
 
         return {
