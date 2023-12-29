@@ -1,18 +1,22 @@
 'use client'
 import {TableSystem} from "@/components/ceo/table";
-import { useAllWarehouses } from "@/hooks/useSystem";
+import { getAllWarehouse } from "@/hooks/useSystem";
+import { findAllUser } from "@/services/ceo/ceoApi";
+import { UserInfo } from "os";
+import { useEffect, useState } from "react";
 export default function System() {
-    const {allWarehouse} = useAllWarehouses();
     const headers = [
         "STT",
         "Địa chỉ",
-        "Chi tiết",
-        "Xóa"
+        "Vùng",
+        "Loại",
+        "Chi tiết"
     ];
 
+    const data = getAllWarehouse();
     return (
-        <>
-        <TableSystem title="giao dịch" headers={headers} data={allWarehouse} rowsPerPage={5}/>
-        </>
+        <div className="flex justify-center items-center mx-5">
+        <TableSystem headers={headers} data={data} rowsPerPage={5}/>
+        </div>
     )
 }

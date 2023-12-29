@@ -1,4 +1,5 @@
 
+import { UpdateWarehouse } from "@/services/ceo/ceoApi";
 import { XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,7 +30,7 @@ export default function AccountModal({setOpenDetail, componentRef, transactionAc
             </div>
             */}
             <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed md:inset-0 max-h-full z-50 outline-none focus:outline-none">
-                <div className="relative w-1/2 mt-10 mx-auto max-w-2xl">
+                <div className="relative w-1/2 my-10 mx-auto max-w-2xl">
                     <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                         <div className="flex items-center justify-between p-5 border-b border-solid border-gray">
                             <h3 className="text-xl font-semibold">
@@ -39,7 +40,7 @@ export default function AccountModal({setOpenDetail, componentRef, transactionAc
                                 <XMarkIcon />
                             </button>
                         </div>
-                        <div className="px-4 md:px-5 space-y-2">
+                        <div className="px-4 md:px-5 py-2 space-y-2">
                             <div className="space-y-4">
                                 <div>
                                     <label className={style.label}>Họ tên
@@ -70,15 +71,6 @@ export default function AccountModal({setOpenDetail, componentRef, transactionAc
                                     <label className={style.label}>Email
                                         <div id="email" className={style.input}>{transactionAccount?.email}</div>
                                     </label>
-                                </div>
-
-                                <div className="w-full flex justify-end items-center space-x-5 pb-3">
-                                    <button className={style.button} type="button">
-                                        Xóa
-                                    </button>
-                                    <button className={style.button} type="button">
-                                        Lưu
-                                    </button>
                                 </div>
                             </div>
                         </div>

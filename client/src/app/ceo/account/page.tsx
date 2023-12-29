@@ -1,20 +1,22 @@
-'use client'
-import {TableAccount} from "@/components/ceo/table";
-import { useAllAccount } from "@/hooks/useAccount";
+"use client";
+import { TableAccount } from "@/components/ceo/table";
+import { useState, useEffect } from "react";
+import { findAllUser } from "@/services/ceo/ceoApi";
+import { allAccount } from "@/hooks/useAccount";
+
 export default function Account() {
-    const {allTransaction} = useAllAccount();
     const headers = [
         "STT",
         "Họ tên",
         "Ngày sinh",
         "Điểm quản lý",
+        "Chức vụ",
         "Chi tiết",
-        "Xóa"
     ];
-
+    const data = allAccount();
     return (
-        <>
-        <TableAccount headers={headers} data={allTransaction} rowsPerPage={5}/>
-        </>
-    )
+        <div className="flex justify-center items-center mx-5">
+            <TableAccount headers={headers} data={data} rowsPerPage={6} />
+        </div>
+    );
 }

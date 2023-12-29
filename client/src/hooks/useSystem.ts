@@ -2,46 +2,32 @@
 import { getAllWarehouses, getWarehouseById } from '@/services/ceo/ceoApi';
 import { useEffect, useState } from "react";
 
-export const useAllWarehouses = () => {
-    const [allWarehouse, setAllWarehouse] = useState<any>([]);
-    const getWarehouses = async () => {
-        await getAllWarehouses().then((response) => {
-            setAllWarehouse(response.data.getAllWarehouses);
-        })
-    }
+export const getAllWarehouse = () => {
+    const [warehouses, setWarehouse] = useState<any>([]);
+    const getWarehouses = async() => {
+        await getAllWarehouses().then((res)=> {
+            setWarehouse(res.data);
+    })}
 
     useEffect(() => {
         getWarehouses();
-    }, []);
-
-    return {
-        allWarehouse,
-    };
+    },[])
+    return warehouses
 }
 
-const useWarehouses = (id: number) => {
-    const [warehouse, setWarehouse] = useState<any>([]);
-    const getWarehouse = async () => {
-        await getWarehouseById(id).then((response) => {
-            const location = response.data;
-          setWarehouse(
-            (location.address ? location.address + ", " : "") +
-              location.ward.name +
-              ", " +
-              location.district.name +
-              ", " +
-              location.division.name
-          );
-        });
+export const useWarehouse = (id: number) => {
+    const [location, setLocation] = useState<any>([]);
+    const Warehouse = async() => {
+        if (id) {
+            await getWarehouseById(id).then((res) => {
+                setLocation(res.data);
+            });
+            return id;
+        }
     };
-
     useEffect(() => {
-        getWarehouse();
+        Warehouse();
     }, [id]);
-
-    return {
-        warehouse,
-    };
+    
+    return location
 };
-
-export default useWarehouses;

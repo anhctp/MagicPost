@@ -1,39 +1,34 @@
-'use client'
-import { getAllTransaction, manageTransaction } from '@/services/ceo/ceoApi';
 import { useEffect, useState } from "react";
+import { findAllUser, findUserbyId } from "@/services/ceo/ceoApi";
 
-export const useAllAccount = () => {
-    const [allTransaction, setAllTransaction] = useState<any>([]);
-    const getAllTransactionAccount = async () => {
-        await getAllTransaction().then((response) => {
-            setAllTransaction(response.data.getAllTransantion);
-        })
-    }
-
+export const allAccount = () => {
+    const [data, setData] = useState<any>([]);
+    const getUsers = async () => {
+        const res = await findAllUser();
+        setData(res.data);
+    };
     useEffect(() => {
-        getAllTransactionAccount();
+        getUsers();
     }, []);
 
-    return {
-        allTransaction,
-    };
+    return data;
 }
 
-const useAccount = (id: number) => {
-    const [transactionAccount, setTransActionAccount] = useState<any>([]);
-    const getManageTransactions = async () => {
-        await manageTransaction(id).then((response) => {
-            setTransActionAccount(response.data.mangage_transaction);
-        });
-    };
 
+const useAccount = (userId: number) => {
+    const [user, setUser] = useState<any>([]);
+    const Account = async () => {
+        if (userId) {
+            await findUserbyId(userId).then((res) => {
+                setUser(res.data);
+            });
+            return userId;
+        }
+    };
     useEffect(() => {
-        getManageTransactions();
-    }, [id]);
-
-    return {
-        transactionAccount
-    };
+        Account();
+    }, [userId]);
+    return { user };
 };
 
 export default useAccount;

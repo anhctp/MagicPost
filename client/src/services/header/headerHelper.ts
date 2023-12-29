@@ -8,12 +8,12 @@ export enum StaffTransactionItem {
   STATISTIC = "statistic",
 }
 export enum CEOItem {
-  SYSTEM = 'manage system', 
-  ACCOUNT = 'manage account leader', 
+  SYSTEM = 'system', 
+  ACCOUNT = 'account', 
   STATISTIC = 'statistic',
 }
 export enum LeaderItem {
-  ACCOUNT = 'manage account staff', 
+  ACCOUNT = 'account', 
   STATISTIC = 'statistic'
 }
 

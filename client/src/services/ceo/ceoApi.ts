@@ -1,43 +1,41 @@
+import { create } from 'zustand';
 "use client";
 import axios from "axios";
+import { WarehouseInfo } from './accountHelper';
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://localhost:8000/api";
 
 const token =
   typeof window !== "undefined" ? localStorage.getItem("token") : "";
 
-export const manageTransaction = (idWarehouse: number) => {
-  return axios.get(`/mangage_transaction/${idWarehouse}`, {
+export const findAllUser = () => {
+  return axios.get(`/user/all`);
+}
+
+export const findUserbyId = (userId:number) => {
+  return axios.get(`/user/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-    },
-  });
-};
-
-export const getAllTransaction = () => {
-    return axios.get("/mangage_all", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  };
+    }
+  })
+}
 
 export const getAllWarehouses = () => {
-  return axios.get("/find");
+  return axios.get(`/warehouse/find`);
 }
 
-export const getWarehouseById = (idWarehouse:number) => {
-  return axios.get(`/${idWarehouse}`);
+export const getWarehouseById = (id:number) => {
+  return axios.get(`/warehouse/${id}`);
 }
 
-export const createWarehouse =() => {
-  return axios.post("/");
+export const UpdateWarehouse = (id:number, data:WarehouseInfo) => {
+  return axios.put(`/warehouse/${id}`,data);
 }
 
-export const updateWarehouse = (idWarehouse:number) => {
-  return axios.put(`/${idWarehouse}`);
+export const DeleteWarehouse = (id:number) => {
+  return axios.delete(`/warehouse/${id}`);
 }
 
-export const deleteWarehouse = (idWarehouse:number) => {
-  return axios.delete(`/${idWarehouse}`);
+export const createWarehouse = (data:WarehouseInfo) => {
+  axios.post(`/warehouse/`, data);
 }
