@@ -1,4 +1,5 @@
 'use client'
+import Image from "next/image";
 
 export default function Services() {
     return (
@@ -6,9 +7,9 @@ export default function Services() {
             <div className="flex flex-col space-y-2 w-5/6 px-5 border border-gray justify-center items-start">
                 <div className="w-full font-bold text-center text-xl">Bảng giá vận chuyển</div>
                 <div className="w-full flex flex-col justify-center items-center">
-                    <img src="/cuoc-phi-Hn,HCM.png" />
-                    <img src="/cuoc-phi-63-tinh.png" />
-                    <img src="/giai-dap.png" />
+                    <Image src="/cuoc-phi-Hn,HCM.png" alt="" height={500} width={500} priority style={{width: '100%',height: 'auto'}}/>
+                    <Image src="/cuoc-phi-63-tinh.png" alt="" height={500} width={500} style={{width: '100%',height: 'auto'}}/>
+                    <Image src="/giai-dap.png" alt="" height={500} width={500} style={{width: '100%',height: 'auto'}}/>
                 </div>
                 <div className="">
                     <div className=""><strong>Lưu ý: </strong>

@@ -165,8 +165,12 @@ class TransactionController:
             .filter(WarehouseModel.id == current_user.warehouses_id)
             .first()
         )
-        ward = db.query(WardModel).filter(WardModel.id==warehouse.location_id).first()
-        gather_ward = db.query(WardModel).filter(WardModel.district_id==ward.district_id).first()
+        ward = db.query(WardModel).filter(WardModel.id == warehouse.location_id).first()
+        gather_ward = (
+            db.query(WardModel)
+            .filter(WardModel.district_id == ward.district_id)
+            .first()
+        )
         # location = (
         #     db.query(LocationModel)
         #     .filter(LocationModel.id == warehouse.location_id)
@@ -185,6 +189,8 @@ class TransactionController:
             date=datetime.now(),
             user_send=current_user.id,
             send_location_id=warehouse.location_id,
+            # receive_location_id=gather_location.id,
+            receive_location_id=gather_ward.id,
             # receive_location_id=gather_location.id,
             receive_location_id=gather_ward.id,
             send_type=SendType.FORWARD,
@@ -474,25 +480,33 @@ class TransactionController:
 
         receive_transactions = (
             db.query(TransactionModel)
+            .join(
+                WarehouseModel, TransactionModel.cur_warehouse_id == WarehouseModel.id
+            )
             .filter(
-                TransactionModel.cur_warehouse_id == current_user.warehouses_id,
-                TransactionModel.status == TransactionStatus.RECEIVED,
+                WarehouseModel.location_id == warehouse.location_id,
             )
             .all()
         )
         for transaction in receive_transactions:
-            tracking = (
+            tracking_array = (
                 db.query(TrackingModel)
                 .filter(
                     TrackingModel.transaction_id == transaction.id,
                     TrackingModel.receive_location_id == warehouse.location_id,
                 )
-                .first()
+                .all()
             )
-            if tracking:
-                if tracking.send_type == SendType.FORWARD:
+            if tracking_array:
+                latest_tracking = max(tracking_array, key=lambda obj: obj.id)
+                if (
+                    latest_tracking.send_type == SendType.FORWARD
+                    and transaction.status == TransactionStatus.RECEIVED
+                ):
                     receives_from_customers.append(transaction)
-                if tracking.send_type == SendType.BACKWARD:
+                if (
+                    latest_tracking.send_type == SendType.BACKWARD
+                ):
                     receive_from_gatherings.append(transaction)
 
         send_transactions = (
@@ -504,18 +518,20 @@ class TransactionController:
             .all()
         )
         for transaction in send_transactions:
-            tracking = (
+            tracking_array = (
                 db.query(TrackingModel)
                 .filter(
                     TrackingModel.transaction_id == transaction.id,
                     TrackingModel.send_location_id == warehouse.location_id,
                 )
-                .first()
+                .all()
             )
-            if tracking.send_type == SendType.FORWARD:
-                send_to_gatherings.append(transaction)
-            else:
-                send_to_customers.append(transaction)
+            if tracking_array:
+                latest_tracking = max(tracking_array, key=lambda obj: obj.id)
+                if latest_tracking.send_type == SendType.FORWARD:
+                    send_to_gatherings.append(transaction)
+                else:
+                    send_to_customers.append(transaction)
 
         return {
             "receive_from_gatherings": receive_from_gatherings,

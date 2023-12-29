@@ -1,9 +1,8 @@
 'use client'
 import Link from "next/link";
 import React from "react";
-import ToggleItem from "@/components/home/services/toggleItem";
-import Delivery from "./delivery";
-import Company from "./company";
+import Delivery from "@/components/home/services/delivery";
+import Company from "@/components/home/services/company";
 
 
 const base = ('border font-bold px-5');

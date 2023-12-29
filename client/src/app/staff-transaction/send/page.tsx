@@ -1,7 +1,11 @@
 "use client";
 import { TableTransaction } from "@/components/staff/table";
 import useTransactionPoint from "@/hooks/useTransactionPoint";
-import { Transfer, headers } from "@/services/staff/transactionPointHelpers";
+import {
+  Transfer,
+  headers,
+  headersShort,
+} from "@/services/staff/transactionPointHelpers";
 import { useState } from "react";
 
 export default function StaffTransaction() {
@@ -22,10 +26,11 @@ export default function StaffTransaction() {
         </select>
       </div>
       <TableTransaction
-        headers={headers}
+        receive={false}
+        transfer={sendTo}
+        headers={sendTo === Transfer.CUSTOMER ? headers : headersShort}
         data={sendTo === Transfer.CUSTOMER ? sendToCustomer : sendToGathering}
         rowsPerPage={5}
-        receiveFrom={""}
       />
     </>
   );
