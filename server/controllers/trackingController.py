@@ -41,7 +41,6 @@ class TrackingController:
                 if i==3:
                     msg = "Đang được chuyển đến điểm giao dịch " + ward.name
                 if i==4:
-                    messages.append(message)    
                     msg = "Nhân viên giao hàng đang tiến hành giao tới " + ward.name
                 message = {
                     "message": msg,
