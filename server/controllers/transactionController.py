@@ -165,25 +165,28 @@ class TransactionController:
             .filter(WarehouseModel.id == current_user.warehouses_id)
             .first()
         )
-        location = (
-            db.query(LocationModel)
-            .filter(LocationModel.id == warehouse.location_id)
-            .first()
-        )
-        gather_location = (
-            db.query(WarehouseModel)
-            .filter(
-                WarehouseModel.location_id == location.id,
-                WarehouseModel.type == TypeWarehouse.GATHERING,
-            )
-            .first()
-        )
+        ward = db.query(WardModel).filter(WardModel.id==warehouse.location_id).first()
+        gather_ward = db.query(WardModel).filter(WardModel.district_id==ward.district_id).first()
+        # location = (
+        #     db.query(LocationModel)
+        #     .filter(LocationModel.id == warehouse.location_id)
+        #     .first()
+        # )
+        # gather_location = (
+        #     db.query(WarehouseModel)
+        #     .filter(
+        #         WarehouseModel.location_id == location.id,
+        #         WarehouseModel.type == TypeWarehouse.GATHERING,
+        #     )
+        #     .first()
+        # )
 
         tracking = CreateTracking(
             date=datetime.now(),
             user_send=current_user.id,
             send_location_id=warehouse.location_id,
-            receive_location_id=gather_location.id,
+            # receive_location_id=gather_location.id,
+            receive_location_id=gather_ward.id,
             send_type=SendType.FORWARD,
         )
         db_tracking = TrackingController.createTracking(
