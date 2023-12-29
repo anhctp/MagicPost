@@ -36,19 +36,22 @@ class GatheringController:
             .filter(CustomerModel.id == transaction.receiver_id)
             .first()
         )
-        gathering_location = (
-            db.query(WarehouseModel)
-            .filter(
-                WarehouseModel.location_id == receiver.location_id,
-                WarehouseModel.type == TypeWarehouse.GATHERING,
-            )
-            .first()
-        )
+        ward_id = receiver.location_id
+        ward = db.query(WardModel).filter(WardModel.id == ward_id).first()
+        gathering_location = db.query(WardModel).filter(WardModel.district_id == ward.district_id).first()
+        # gathering_location = (
+        #     db.query(WarehouseModel)
+        #     .filter(
+        #         WarehouseModel.location_id == receiver.location_id,
+        #         WarehouseModel.type == TypeWarehouse.GATHERING,
+        #     )
+        #     .first()
+        # )
 
         tracking = CreateTracking(
             date=datetime.now(),
             user_send=current_user.id,
-            send_location_id=warehouse.id,
+            send_location_id=warehouse.location_id,
             receive_location_id=gathering_location.id,
             send_type=SendType.GG,
         )
@@ -257,7 +260,6 @@ class GatheringController:
             )
             .all()
         )
-
         for transaction in receive_transactions:
             tracking = (
                 db.query(TrackingModel)
@@ -310,10 +312,11 @@ class GatheringController:
                 )
                 .first()
             )
-            if tracking.send_type == SendType.GG:
-                send_to_gatherings.append(transaction)
-            if tracking.send_type == SendType.BACKWARD:
-                send_to_transactions.append(transaction)
+            if tracking is not None:
+                if tracking.send_type == SendType.GG:
+                    send_to_gatherings.append(transaction)
+                if tracking.send_type == SendType.BACKWARD:
+                    send_to_transactions.append(transaction)
 
         return {
             "receive_from_gatherings": receive_from_gatherings,
