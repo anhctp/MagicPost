@@ -113,6 +113,57 @@ class WarehouseController:
         }
         return result
 
+    def getWarehouseByLocationId(location_id: int, db: Session = Depends(getDatabase)):
+        division_alias = aliased(divisionModel.DivisionModel, name="division")
+        district_alias = aliased(districtModel.DistrictModel, name="district")
+        ward_alias = aliased(wardModel.WardModel, name="ward")
+        location_alias = aliased(locationModel.LocationModel, name="location")
+        warehouses = (
+            db.query(
+                WarehouseModel.id,
+                WarehouseModel.type,
+                location_alias.id.label("location_id"),
+                location_alias.address.label("location_address"),
+                ward_alias.id.label("ward_id"),
+                ward_alias.name.label("ward_name"),
+                district_alias.id.label("district_id"),
+                district_alias.name.label("district_name"),
+                division_alias.id.label("division_id"),
+                division_alias.name.label("division_name"),
+            )
+            .join(location_alias, WarehouseModel.location_id == location_alias.id)
+            .join(ward_alias, location_alias.ward_id == ward_alias.id)
+            .join(district_alias, ward_alias.district_id == district_alias.id)
+            .join(division_alias, district_alias.division_id == division_alias.id)
+            .filter(WarehouseModel.location_id == location_id)
+            .all()
+        )
+        if not warehouses:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Credentials"
+            )
+        result = []
+        for item in warehouses:
+            warehouse = {
+                "id": item.id,
+                "type": item.type,
+                "location": {"id": item.location_id, "address": item.location_address},
+                "ward": {
+                    "id": item.ward_id,
+                    "name": item.ward_name,
+                },
+                "district": {
+                    "id": item.district_id,
+                    "name": item.district_name,
+                },
+                "division": {
+                    "id": item.division_id,
+                    "name": item.division_name,
+                },
+            }
+            result.append(warehouse)
+        return result
+
     def createWarehouse(warehouse: CreateWarehouse, db: Session = Depends(getDatabase)):
         db_warehouse = WarehouseModel(
             location_id=warehouse.location_id, type=warehouse.type
