@@ -1,17 +1,9 @@
 "use client";
-import { TableSystem, TableTransaction } from "@/components/ceo/table";
+import { TableTransaction } from "@/components/ceo/table";
 import { ModalLocation } from "@/components/staff/modalLocation";
-import {
-  getAllTransaction,
-  getAllWarehouses,
-  manageTransaction,
-} from "@/services/ceo/ceoApi";
-import { TransactionTypeWarehouse } from "@/services/ceo/ceoHelpers";
-import {
-  getTrackingByTransaction,
-  getWarehouseByLocationId,
-} from "@/services/customer/customerApi";
-import { all } from "axios";
+import { getAllTransaction, manageTransaction } from "@/services/ceo/ceoApi";
+import { TypeWarehouse } from "@/services/ceo/ceoHelpers";
+import { getWarehouseByLocationId } from "@/services/customer/customerApi";
 import { useEffect, useState } from "react";
 
 export default function Statistic() {
@@ -20,7 +12,7 @@ export default function Statistic() {
   const [warehouseId, setWarehouseId] = useState<number>(1);
   const [manages, setManages] = useState<any>([]);
   const [allManage, setAllManage] = useState<any>([]);
-  const [type, setType] = useState<string>(TransactionTypeWarehouse.GATHERING);
+  const [type, setType] = useState<string>(TypeWarehouse.GATHERING);
   const getAllManages = async () => {
     await getAllTransaction().then((response) => {
       setAllManage(response.data);
@@ -35,7 +27,8 @@ export default function Statistic() {
   const handleClickSearchingWarehouse = async () => {
     await getWarehouseByLocationId(locationId)
       .then((value) => {
-        setWarehouseId(value.data[0].id);
+        const matchWarehouse = value.data.find((obj: any) => obj.type === type);
+        setWarehouseId(matchWarehouse.id);
       })
       .catch((err) => console.log(err));
   };
@@ -60,6 +53,21 @@ export default function Statistic() {
             Toàn bộ
           </div>
         </div>
+      </div>
+      <div className="flex justify-start items-center">
+        <select
+          className="border rounded-full border-stone-600 text-stone-600 px-2"
+          onChange={(e) => {
+            setType(e.target.value);
+          }}
+        >
+          <option value={TypeWarehouse.GATHERING}>
+            {TypeWarehouse.GATHERING}
+          </option>
+          <option value={TypeWarehouse.TRANSACTION}>
+            {TypeWarehouse.TRANSACTION}
+          </option>
+        </select>
       </div>
       {locationId
         ? manages && (

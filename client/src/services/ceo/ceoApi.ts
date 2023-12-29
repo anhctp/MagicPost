@@ -41,3 +41,21 @@ export const updateWarehouse = (idWarehouse: number) => {
 export const deleteWarehouse = (idWarehouse: number) => {
   return axios.delete(`/${idWarehouse}`);
 };
+
+export const getUserByRole = (role: string) => {
+  return axios.get(`/user/find?role=${role}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const getUserById = (userId: string) => {
+  return axios.get(`/user/${userId}`);
+};
+export const deleteUser = (userId: number) => {
+  return axios.get(`/user/delete/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

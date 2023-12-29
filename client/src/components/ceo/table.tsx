@@ -4,7 +4,6 @@ import useTable from "@/hooks/useTable";
 import TableFooter from "../staff/table/tableFooter";
 import Image from "next/image";
 import AccountModal from "./accountModal";
-import useAccount from "@/hooks/useAccount";
 import useWarehouses from "@/hooks/useSystem";
 import SystemModal from "./systemModal";
 import { ModalDetail } from "../staff/modalDetails";
@@ -29,10 +28,8 @@ export const TableAccount = ({
   rowsPerPage: number;
 }) => {
   const [page, setPage] = useState(1);
-  const componentRef = useRef<HTMLDivElement>(null);
   const [openDetail, setOpenDetail] = useState<number | null>(null);
   const { slice, range } = useTable(data, page, rowsPerPage);
-  const { transactionAccount } = useAccount(openDetail!);
 
   return (
     <div>
@@ -50,15 +47,22 @@ export const TableAccount = ({
                 </tr>
               </thead>
               <tbody>
-                {slice.map((item) => (
-                  <tr className={styles.tableRowItems} key={item.id}>
-                    <td className={styles.tableCell}>{item.id}</td>
-                    <td className={styles.tableCell}>{item.fullname}</td>
-                    <td className={styles.tableCell}>{item.date_of_birth}</td>
-                    <td className={styles.tableCell}>{item.warehouses_id}</td>
+                {slice.map((item, index) => (
+                  <tr key={index} className={styles.tableRowItems}>
+                    <td className={styles.tableCell}>{index + 1}</td>
+                    <td className={styles.tableCell}>{item.user.fullname}</td>
+                    <td className={styles.tableCell}>
+                      {item.user.date_of_birth}
+                    </td>
+                    <td className={styles.tableCell}>
+                      {item.location.ward.name}, {item.location.district.name},{" "}
+                      {item.location.division.name}
+                    </td>
                     <td
                       className={styles.tableCellDetail}
-                      onClick={() => setOpenDetail(item.id)}
+                      onClick={() => {
+                        setOpenDetail(item.user.id);
+                      }}
                     >
                       Chi tiết
                     </td>
@@ -86,11 +90,7 @@ export const TableAccount = ({
         )}
       </div>
       {openDetail && (
-        <AccountModal
-          setOpenDetail={setOpenDetail}
-          componentRef={componentRef}
-          transactionAccount={transactionAccount}
-        />
+        <AccountModal openDetail={openDetail} setOpenDetail={setOpenDetail} />
       )}
     </div>
   );
