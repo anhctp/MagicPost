@@ -15,29 +15,29 @@ export const manageTransaction = (idWarehouse: number) => {
 };
 
 export const getAllTransaction = () => {
-    return axios.get("/mangage_all", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  };
+  return axios.get("/mangage_all", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 
-export const getAllWarehouses = () => {
-  return axios.get("/find");
-}
+export const getAllWarehouses = (page: number, size: number, type: string) => {
+  return axios.get(`/warehouse/find?page=${page}&size=${size}&type=${type}`);
+};
 
-export const getWarehouseById = (idWarehouse:number) => {
+export const getWarehouseById = (idWarehouse: number) => {
   return axios.get(`/${idWarehouse}`);
-}
+};
 
-export const createWarehouse =() => {
+export const createWarehouse = () => {
   return axios.post("/");
-}
+};
 
-export const updateWarehouse = (idWarehouse:number) => {
+export const updateWarehouse = (idWarehouse: number) => {
   return axios.put(`/${idWarehouse}`);
-}
+};
 
-export const deleteWarehouse = (idWarehouse:number) => {
+export const deleteWarehouse = (idWarehouse: number) => {
   return axios.delete(`/${idWarehouse}`);
-}
+};
