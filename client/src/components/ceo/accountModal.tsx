@@ -50,7 +50,7 @@ export default function AccountModal({
         <div className="relative w-1/2 mt-10 mx-auto max-w-2xl">
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="flex items-center justify-between p-5 border-b border-solid border-gray">
-              <h3 className="text-xl font-semibold">Thông tin trưởng điểm</h3>
+              <h3 className="text-xl font-semibold">Thông tin cá nhân</h3>
               <button
                 onClick={closeModal}
                 className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
