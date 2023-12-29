@@ -256,7 +256,7 @@ export const TableTransaction: React.FC<Props> = ({
                         onClick={() => handleSend(item.id, item.status)}
                       >
                         {transfer === Transfer.CUSTOMER && (
-                          <div className="flex items-center">
+                          <div className="flex items-center gap-2">
                             <div
                               className="w-fit flex items-center justify-center gap-2 border rounded-xl border-stone-600 cursor-pointer text-stone-600 hover:bg-stone-600 hover:text-white p-2"
                               onClick={() =>
