@@ -11,6 +11,7 @@ from routes import (
     districtRoute,
     divisionRoute,
     wardRoute,
+    trackingRoute
 )
 
 Base.metadata.create_all(bind=engine)
@@ -24,6 +25,8 @@ app.include_router(manageRoute.router, prefix="/api")
 app.include_router(districtRoute.router, prefix="/api")
 app.include_router(divisionRoute.router, prefix="/api")
 app.include_router(wardRoute.router, prefix="/api")
+app.include_router(trackingRoute.router, prefix="/api")
+
 
 app.add_middleware(
     CORSMiddleware,
