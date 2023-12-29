@@ -75,6 +75,13 @@ export const updateStatusTransaction = (
     },
   });
 };
+export const getStatusQuantity = () => {
+  return axios.get(`/transaction/get_status_quantity`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 
 // Gathering
 

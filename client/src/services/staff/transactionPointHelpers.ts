@@ -18,6 +18,7 @@ export const headersShort = [
   "Tình trạng",
   "Chi tiết",
 ];
+export const colorsChart = ["#FA8072", "#91C788"];
 
 export enum ItemType {
   DOCUMENTS = "documents",
