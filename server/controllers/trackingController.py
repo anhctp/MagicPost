@@ -25,10 +25,11 @@ class TrackingController:
         db.refresh(db_tracking)
         return db_tracking
     
-    def getTrackingByTransactionId(transaction_id: int, db: Session = Depends(getDatabase)):
-        trackings = db.query(TrackingModel).filter(TrackingModel.transaction_id == transaction_id).all()
+    def getTrackingByTransactionId(transaction_code: int, db: Session = Depends(getDatabase)):
+        transaction = db.query(TransactionModel).filter(TransactionModel.code == transaction_code).first()
+        trackings = db.query(TrackingModel).filter(TrackingModel.transaction_id == transaction.id).all()
         messages = []
-        transaction = db.query(TransactionModel).filter(TransactionModel.id == transaction_id).first()
+        
         if trackings is not None:
             for i, tracking in enumerate(trackings):
                 ward = db.query(WardModel).filter(WardModel.id == tracking.receive_location_id).first()
@@ -55,11 +56,5 @@ class TrackingController:
             messages.append(msg)
         return messages
 
-        # for tracking in trackings:
-            # ward = db.query(WardModel).filter(WardModel.id == tracking.receive_location_id).first()
-            # if tracking.send_location_id == tracking.receive_location_id and tracking.send_type=='FORWARD':
-            #     msg = "Tiếp nhận hàng tại điểm giao dịch " + ward.name
-            # elif tracking.send_type=='FORWARD' or tracking.send_type=='GG':
-            #     msg = "Giao hàng tới điểm tập kết " + ward.name 
-            
+    
 
